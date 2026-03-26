@@ -39,7 +39,7 @@ class TestStringMethod(unittest.TestCase):
     def test_center(self):
         # Arrange
         line = "foo"
-        expected = '   foo    '
+        expected = "   foo    "
 
         # Act
         result = line.center(10)
@@ -68,6 +68,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_endswith(self):
         # Arrange
         line = "foo"
@@ -78,6 +79,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_expandtabs(self):
         # Arrange
         line = "foo\tbar"
@@ -88,6 +90,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_find(self):
         # Arrange
         line = "foo bar foo"
@@ -98,6 +101,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_format(self):
         # Arrange
         line = "foo {}"
@@ -108,6 +112,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_format_map(self):
         # Arrange
         line = "foo {name}"
@@ -119,6 +124,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_index(self):
         # Arrange
         line = "foo bar foo"
@@ -129,6 +135,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_isalnum(self):
         # Arrange
         line = "foo123"
@@ -139,6 +146,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_isalpha(self):
         # Arrange
         line = "foo"
@@ -149,6 +157,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_isdigit(self):
         # Arrange
         line = "123"
@@ -159,6 +168,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_islower(self):
         # Arrange
         line = "foo"
@@ -169,6 +179,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_isspace(self):
         # Arrange
         line = "   "
@@ -179,6 +190,7 @@ class TestStringMethod(unittest.TestCase):
 
         # Assert
         self.assertEqual(result, expected)
+
     def test_istitle(self):
         # Arrange
         line = "Foo Bar"
@@ -188,7 +200,7 @@ class TestStringMethod(unittest.TestCase):
         result = line.istitle()
 
         # Assert
-        self.assertEqual(result, expected)                                            
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
