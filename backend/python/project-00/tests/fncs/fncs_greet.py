@@ -17,7 +17,7 @@ class FncsGreetTestCase(unittest.TestCase):
         # Arrange
 
         # Act
-        fncs_greet.greet("Alice")
+        fncs_greet.greet(name="Alice")
 
         # Assert
         mock_print.assert_called_once_with("Hello, Alice")
@@ -28,7 +28,7 @@ class FncsGreetTestCase(unittest.TestCase):
         expected_name = "Bob"
         expected_print = f"Hello, {expected_name}"
         # Act
-        fncs_greet.greet(expected_name)
+        fncs_greet.greet(name=expected_name)
 
         # Assert
         mock_print.assert_called_once_with(expected_print)
@@ -40,7 +40,7 @@ class FncsGreetTestCase(unittest.TestCase):
         expected_print = f"{greeting}, {name}"
         with mock.patch("builtins.print") as mock_print:
             # Act
-            fncs_greet.greet(name, greeting)
+            fncs_greet.greet(name=name, greeting=greeting)
 
             # Assert
             mock_print.assert_called_once_with(expected_print)
@@ -51,7 +51,7 @@ class FncsGreetTestCase(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError) as context:
-            fncs_greet.greet(non_string_name)
+            fncs_greet.greet(name=non_string_name)
         self.assertEqual(str(context.exception), "Name must be a string")
 
     def test_greet_function_with_non_string_greeting(self):
@@ -61,7 +61,7 @@ class FncsGreetTestCase(unittest.TestCase):
 
         # Act & Assert
         with self.assertRaises(ValueError) as context:
-            fncs_greet.greet(name, non_string_greeting)
+            fncs_greet.greet(name=name, greeting=non_string_greeting)
         self.assertEqual(str(context.exception), "Greeting must be a string")
 
 
