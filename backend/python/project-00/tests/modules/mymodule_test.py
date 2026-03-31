@@ -2,15 +2,16 @@ import unittest
 import sys
 import os
 from unittest import mock
-
+#from  src.own_module import mymodule
 # Add src to path to import mymodule
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src")))
+
+from own_module import mymodule
 
 class MyModuleTestCase(unittest.TestCase):
     @mock.patch("builtins.print")
     def test_greeting(self, mock_print):
         # Arrange
-        import mymodule
         name = "Jonathan"
 
         # Act
@@ -21,7 +22,7 @@ class MyModuleTestCase(unittest.TestCase):
 
     def test_person1_variable(self):
         # Arrange
-        import mymodule
+        #from own_module import mymodule
 
         # Act
         person = mymodule.person1
@@ -33,11 +34,12 @@ class MyModuleTestCase(unittest.TestCase):
 
     def test_import_mymodule_access_age(self):
         """
-        import mymodule
+        from own_module import mymodule
         a = mymodule.person1["age"]
         """
         # Arrange
-        import mymodule
+
+        #from own_module import mymodule
 
         # Act
         a = mymodule.person1["age"]
