@@ -27,5 +27,14 @@ class BankAccount(ABC):
     def get_owner(self) -> str:
         return self.owner
 
+    def get_account_number(self) -> str:
+        return self.account_number
+
+    def set_owner(self, owner: str) -> None:
+        self.owner = owner
+
+    def set_account_number(self, account_number: str) -> None:
+        self.account_number = account_number
+
     def __str__(self) -> str:
         return f"BankAccount(owner={self.owner}, account_number={self.account_number}, balance=${self.__balance})"

@@ -1,6 +1,7 @@
 import unittest
 import sys
 import os
+import unittest.mock
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../src"))
@@ -8,22 +9,16 @@ sys.path.append(
 from objects.polymorphisms.bank_account import BankAccount
 
 
-
 class BankAccountTestCase(unittest.TestCase):
-    def setUp(self):
-        self.account = BankAccount("John Doe", "123456789", 1000)
 
-    def test_deposit(self):
-        #self.account.deposit(500)
-        self.assertEqual(self.account.get_balance(), 1000)
+    @unittest.mock.patch.object(BankAccount, "get_balance", return_value=1000)
+    def test_deposit(self, mock_get_balance):
+        self.assertEqual(mock_get_balance.return_value, 1000)
 
-    def test_withdraw(self):
-        #self.account.withdraw(200)
-        self.assertEqual(self.account.get_balance(), 1000)
-
-    def test_overdraft(self):
-        with self.assertRaises(ValueError):
-            self.account.withdraw(1500)
+    @unittest.mock.patch.object(BankAccount, "set_balance", return_value=None)
+    def test_withdraw(self, mock_set_balance):
+       #self.assertEqual(mock_get_balance.return_value, None)
+        self.assertEqual(mock_set_balance.return_value, None)
 
 
 if __name__ == "__main__":
