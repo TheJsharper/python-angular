@@ -118,6 +118,297 @@ class MainTestCase(unittest.TestCase):
         self.assertIn("description", technology)
         self.assertNotIn("content", technology)
 
+    def test_create_technology(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("technology", response.json())
+        technology = response.json()["technology"]
+        self.assertIn("id", technology)
+        self.assertEqual(technology["title"], new_technology["title"])
+        self.assertEqual(technology["description"], new_technology["description"])
+        self.assertEqual(technology["content"], new_technology["content"])
+
+    def test_create_technology_missing_fields(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title, description, and content are required",
+        )
+
+    def test_create_technology_invalid_fields(self):
+        new_technology = {
+            "title": 123,
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title, description, and content must be strings",
+        )
+
+    def test_create_technology_title_too_short(self):
+        new_technology = {
+            "title": "Doc",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title must be at least 5 characters long",
+        )
+
+    def test_create_technology_description_too_short(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Description must be at least 10 characters long",
+        )
+
+    def test_create_technology_content_too_short(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Too short.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Content must be at least 20 characters long",
+        )
+
+    def test_create_technology_title_too_long(self):
+        new_technology = {
+            "title": "D" * 101,
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title must be 100 characters or less",
+        )
+
+    def test_create_technology_description_too_long(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "D" * 301,
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Description must be 300 characters or less",
+        )
+
+    def test_create_technology_content_too_long(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "D" * 1001,
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Content must be 1000 characters or less",
+        )
+
+    def test_create_technology_description_not_enough_alnum(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "!!!@@@###$$$%%%^^^&&&***((()))",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Description must be at least 10 characters long",
+        )
+
+    def test_create_technology_content_not_enough_alnum(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "!!!@@@###$$$%%%^^^&&&***((()))",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Content must be at least 20 characters long",
+        )
+
+    def test_create_technology_empty_title(self):
+        new_technology = {
+            "title": "",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title must be at least 5 characters long",
+        )
+
+    def test_create_technology_empty_description(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "",
+            "content": "A platform for developing, shipping, and running applications in containers.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Description must be at least 10 characters long",
+        )
+
+    def test_create_technology_empty_content(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Content must be at least 20 characters long",
+        )
+
+    def test_create_technology_all_fields_empty(self):
+        new_technology = {
+            "title": "",
+            "description": "",
+            "content": "",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title must be at least 5 characters long",
+        )
+
+    def test_create_technology_all_fields_missing(self):
+        new_technology = {}
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title, description, and content are required",
+        )
+
+    def test_create_technology_all_fields_invalid(self):
+        new_technology = {
+            "title": 123,
+            "description": 456,
+            "content": 789,
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title, description, and content must be strings",
+        )
+
+    def test_create_technology_title_only_whitespace(self):
+        new_technology = {
+            "title": "     ",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Title must be at least 5 characters long",
+        )
+
+    def test_create_technology_description_only_whitespace(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "     ",
+            "content": "A platform for developing, shipping, and running applications in containers.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Description must be at least 10 characters long",
+        )
+
+    def test_create_technology_content_only_whitespace(self):
+        new_technology = {
+            "title": "Docker",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "     ",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(
+            response.json()["error"],
+            "Content must be at least 20 characters long",
+        )
+
+    def test_create_technology_title_whitespace_and_valid(self):
+        new_technology = {
+            "title": "   Docker   ",
+            "description": "A platform for developing, shipping, and running applications in containers.",
+            "content": "Docker simplifies application deployment and scaling.",
+        }
+        response = client.post("/technologies", json=new_technology)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("technology", response.json())
+        technology = response.json()["technology"]
+        self.assertIn("id", technology)
+        self.assertEqual(technology["title"], new_technology["title"])
+        self.assertEqual(technology["description"], new_technology["description"])
+        self.assertEqual(technology["content"], new_technology["content"])
+
     def tearDown(self):
         return super().tearDown()
 

@@ -92,7 +92,10 @@ async def get_technologies(
 
 
 @app.get("/technologies/{technology_id}")
-async def get_technology_by_id(technology_id: int, include_content: bool = Query(True, description="Include content in the response")):
+async def get_technology_by_id(
+    technology_id: int,
+    include_content: bool = Query(True, description="Include content in the response"),
+):
     if technology_id <= 0:
         return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
 
@@ -105,7 +108,66 @@ async def get_technology_by_id(technology_id: int, include_content: bool = Query
 
     if technology:
         if not include_content:
-            technology = {key: value for key, value in technology.items() if key != "content"}
+            technology = {
+                key: value for key, value in technology.items() if key != "content"
+            }
 
         return {"technology": technology}
     return JSONResponse(content={"error": "Technology not found"}, status_code=404)
+
+
+@app.post("/technologies")
+async def create_technology(technology: dict):
+    required_fields = ("title", "description", "content")
+    if any(field not in technology for field in required_fields):
+        return JSONResponse(
+            content={"error": "Title, description, and content are required"},
+            status_code=400,
+        )
+    if (
+        not isinstance(technology["title"], str)
+        or not isinstance(technology["description"], str)
+        or not isinstance(technology["content"], str)
+    ):
+        return JSONResponse(
+            content={"error": "Title, description, and content must be strings"},
+            status_code=400,
+        )
+    if len(technology["title"]) > 100:
+        return JSONResponse(
+            content={"error": "Title must be 100 characters or less"}, status_code=400
+        )
+    if len(technology["description"]) > 300:
+        return JSONResponse(
+            content={"error": "Description must be 300 characters or less"},
+            status_code=400,
+        )
+    if len(technology["content"]) > 1000:
+        return JSONResponse(
+            content={"error": "Content must be 1000 characters or less"},
+            status_code=400,
+        )
+    if len(technology["title"].strip()) < 5:
+        return JSONResponse(
+            content={"error": "Title must be at least 5 characters long"},
+            status_code=400,
+        )
+    description_alnum_len = sum(
+        1 for ch in technology["description"].strip() if ch.isalnum()
+    )
+    if description_alnum_len < 10:
+        return JSONResponse(
+            content={"error": "Description must be at least 10 characters long"},
+            status_code=400,
+        )
+    content_alnum_len = sum(1 for ch in technology["content"].strip() if ch.isalnum())
+    if content_alnum_len < 20:
+        return JSONResponse(
+            content={"error": "Content must be at least 20 characters long"},
+            status_code=400,
+        )
+
+    new_id = max(tech["id"] for tech in list_technologies) + 1
+    technology["id"] = new_id
+    list_technologies.append(technology)
+    return {"message": "Technology created successfully", "technology": technology}
