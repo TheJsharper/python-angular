@@ -48,6 +48,20 @@ class MainTestCase(unittest.TestCase):
             self.assertIn("description", tech)
             self.assertIn("content", tech)
 
+    def test_get_technologies_with_query(self):
+        query_value = "Python"
+        response = client.get(f"/technologies?query={query_value}")
+        self.assertEqual(response.status_code, 200)
+        technologies = response.json().get("technologies", [])
+        self.assertIsInstance(technologies, list)
+        self.assertGreater(len(technologies), 0)
+        for tech in technologies:
+            is_title_match = query_value.lower() in tech["title"].lower()
+
+            is_description_match = query_value.lower() in tech["description"].lower()
+
+            self.assertTrue(is_title_match or is_description_match)
+
     def tearDown(self):
         return super().tearDown()
 

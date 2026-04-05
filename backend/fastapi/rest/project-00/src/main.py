@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 
 app = FastAPI(
     title="Project 00",
@@ -76,5 +76,15 @@ async def read_root():
 
 
 @app.get("/technologies")
-async def get_technologies():
+async def get_technologies(
+    query: str = Query(None, description="Filter technologies by title or description")
+):
+    if query:
+        filtered_technologies = [
+            tech
+            for tech in list_technologies
+            if query.lower() in tech["title"].lower()
+            or query.lower() in tech["description"].lower()
+        ]
+        return {"technologies": filtered_technologies}
     return {"technologies": list_technologies}
