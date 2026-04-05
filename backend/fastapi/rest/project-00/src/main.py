@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from fastapi.responses import JSONResponse
 
 app = FastAPI(
     title="Project 00",
@@ -88,3 +89,20 @@ async def get_technologies(
         ]
         return {"technologies": filtered_technologies}
     return {"technologies": list_technologies}
+
+
+@app.get("/technologies/{technology_id}")
+async def get_technology_by_id(technology_id: int):
+    if technology_id <= 0:
+        return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
+
+    if technology_id > len(list_technologies):
+        return JSONResponse(content={"error": "Technology not found"}, status_code=404)
+
+    technology = next(
+        (tech for tech in list_technologies if tech["id"] == technology_id), None
+    )
+
+    if technology:
+        return {"technology": technology}
+    return JSONResponse(content={"error": "Technology not found"}, status_code=404)

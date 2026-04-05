@@ -25,7 +25,6 @@ class MainTestCase(unittest.TestCase):
 
     def test_read_root(self):
         response = client.get("/")
-        print(response.json())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Welcome to Project 00!"})
 
@@ -61,6 +60,38 @@ class MainTestCase(unittest.TestCase):
             is_description_match = query_value.lower() in tech["description"].lower()
 
             self.assertTrue(is_title_match or is_description_match)
+
+    def test_get_technology_by_id(self):
+        technology_id = 1
+        response = client.get(f"/technologies/{technology_id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("technology", response.json())
+        technology = response.json()["technology"]
+        self.assertEqual(technology["id"], technology_id)
+        self.assertIn("title", technology)
+        self.assertIn("description", technology)
+        self.assertIn("content", technology)
+
+    def test_get_technology_by_id_not_found(self):
+        technology_id = 999
+        response = client.get(f"/technologies/{technology_id}")
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("error", response.json())
+        self.assertEqual(response.json()["error"], "Technology not found")
+
+    def test_get_technology_by_id_invalid(self):
+        technology_id = "invalid"
+        response = client.get(f"/technologies/{technology_id}")
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("detail", response.json())
+        self.assertEqual(response.json()["detail"][0]["msg"], "Input should be a valid integer, unable to parse string as an integer")
+
+    def test_get_technology_by_id_negative(self):
+        technology_id = -1
+        response = client.get(f"/technologies/{technology_id}")
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.json())
+        self.assertEqual(response.json()["error"], "Invalid technology ID")
 
     def tearDown(self):
         return super().tearDown()
