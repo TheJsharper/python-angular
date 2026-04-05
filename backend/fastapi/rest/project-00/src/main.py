@@ -92,7 +92,7 @@ async def get_technologies(
 
 
 @app.get("/technologies/{technology_id}")
-async def get_technology_by_id(technology_id: int):
+async def get_technology_by_id(technology_id: int, include_content: bool = Query(True, description="Include content in the response")):
     if technology_id <= 0:
         return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
 
@@ -104,5 +104,8 @@ async def get_technology_by_id(technology_id: int):
     )
 
     if technology:
+        if not include_content:
+            technology = {key: value for key, value in technology.items() if key != "content"}
+
         return {"technology": technology}
     return JSONResponse(content={"error": "Technology not found"}, status_code=404)

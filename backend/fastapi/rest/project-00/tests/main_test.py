@@ -84,7 +84,10 @@ class MainTestCase(unittest.TestCase):
         response = client.get(f"/technologies/{technology_id}")
         self.assertEqual(response.status_code, 422)
         self.assertIn("detail", response.json())
-        self.assertEqual(response.json()["detail"][0]["msg"], "Input should be a valid integer, unable to parse string as an integer")
+        self.assertEqual(
+            response.json()["detail"][0]["msg"],
+            "Input should be a valid integer, unable to parse string as an integer",
+        )
 
     def test_get_technology_by_id_negative(self):
         technology_id = -1
@@ -92,6 +95,28 @@ class MainTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn("error", response.json())
         self.assertEqual(response.json()["error"], "Invalid technology ID")
+
+    def test_get_technology_by_id_include_content(self):
+        technology_id = 1
+        response = client.get(f"/technologies/{technology_id}?include_content=true")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("technology", response.json())
+        technology = response.json()["technology"]
+        self.assertEqual(technology["id"], technology_id)
+        self.assertIn("title", technology)
+        self.assertIn("description", technology)
+        self.assertIn("content", technology)
+
+    def test_get_technology_by_id_exclude_content(self):
+        technology_id = 1
+        response = client.get(f"/technologies/{technology_id}?include_content=false")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("technology", response.json())
+        technology = response.json()["technology"]
+        self.assertEqual(technology["id"], technology_id)
+        self.assertIn("title", technology)
+        self.assertIn("description", technology)
+        self.assertNotIn("content", technology)
 
     def tearDown(self):
         return super().tearDown()
