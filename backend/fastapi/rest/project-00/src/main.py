@@ -7,68 +7,77 @@ app = FastAPI(
     version="1.0.0",
 )
 
-list_technologies = [
-    {
-        "id": 1,
-        "title": "Python",
-        "description": "A high-level programming language.",
-        "content": "Python is widely used in web development, data science, and AI.",
-    },
-    {
-        "id": 2,
-        "title": "FastAPI",
-        "description": "A modern web framework for building APIs with Python.",
-        "content": "FastAPI is based on standard Python type hints and offers automatic docs.",
-    },
-    {
-        "id": 3,
-        "title": "Django",
-        "description": "A high-level Python web framework.",
-        "content": "Django follows the MTV pattern and includes a built-in ORM.",
-    },
-    {
-        "id": 4,
-        "title": "Angular",
-        "description": "A TypeScript-based front-end framework by Google.",
-        "content": "Angular uses components, modules, and services to build SPAs.",
-    },
-    {
-        "id": 5,
-        "title": "TypeScript",
-        "description": "A strongly typed superset of JavaScript.",
-        "content": "TypeScript compiles to plain JavaScript and adds optional static typing.",
-    },
-    {
-        "id": 6,
-        "title": "PostgreSQL",
-        "description": "An open-source relational database system.",
-        "content": "PostgreSQL supports advanced data types and performance optimization.",
-    },
-    {
-        "id": 7,
-        "title": "Docker",
-        "description": "A platform for developing and running containerized applications.",
-        "content": "Docker uses containers to bundle code and dependencies together.",
-    },
-    {
-        "id": 8,
-        "title": "Redis",
-        "description": "An in-memory data structure store.",
-        "content": "Redis is used as a database, cache, and message broker.",
-    },
-    {
-        "id": 9,
-        "title": "Git",
-        "description": "A distributed version control system.",
-        "content": "Git tracks changes in source code and enables collaboration.",
-    },
-    {
-        "id": 10,
-        "title": "Linux",
-        "description": "An open-source Unix-like operating system kernel.",
-        "content": "Linux powers the majority of web servers and cloud infrastructure.",
-    },
-]
+def build_default_technologies():
+    return [
+        {
+            "id": 1,
+            "title": "Python",
+            "description": "A high-level programming language.",
+            "content": "Python is widely used in web development, data science, and AI.",
+        },
+        {
+            "id": 2,
+            "title": "FastAPI",
+            "description": "A modern web framework for building APIs with Python.",
+            "content": "FastAPI is based on standard Python type hints and offers automatic docs.",
+        },
+        {
+            "id": 3,
+            "title": "Django",
+            "description": "A high-level Python web framework.",
+            "content": "Django follows the MTV pattern and includes a built-in ORM.",
+        },
+        {
+            "id": 4,
+            "title": "Angular",
+            "description": "A TypeScript-based front-end framework by Google.",
+            "content": "Angular uses components, modules, and services to build SPAs.",
+        },
+        {
+            "id": 5,
+            "title": "TypeScript",
+            "description": "A strongly typed superset of JavaScript.",
+            "content": "TypeScript compiles to plain JavaScript and adds optional static typing.",
+        },
+        {
+            "id": 6,
+            "title": "PostgreSQL",
+            "description": "An open-source relational database system.",
+            "content": "PostgreSQL supports advanced data types and performance optimization.",
+        },
+        {
+            "id": 7,
+            "title": "Docker",
+            "description": "A platform for developing and running containerized applications.",
+            "content": "Docker uses containers to bundle code and dependencies together.",
+        },
+        {
+            "id": 8,
+            "title": "Redis",
+            "description": "An in-memory data structure store.",
+            "content": "Redis is used as a database, cache, and message broker.",
+        },
+        {
+            "id": 9,
+            "title": "Git",
+            "description": "A distributed version control system.",
+            "content": "Git tracks changes in source code and enables collaboration.",
+        },
+        {
+            "id": 10,
+            "title": "Linux",
+            "description": "An open-source Unix-like operating system kernel.",
+            "content": "Linux powers the majority of web servers and cloud infrastructure.",
+        },
+    ]
+
+
+list_technologies = build_default_technologies()
+
+
+def reset_technologies():
+    list_technologies.clear()
+    list_technologies.extend(build_default_technologies())
 
 
 @app.get("/")
@@ -98,9 +107,6 @@ async def get_technology_by_id(
 ):
     if technology_id <= 0:
         return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
-
-    if technology_id > len(list_technologies):
-        return JSONResponse(content={"error": "Technology not found"}, status_code=404)
 
     technology = next(
         (tech for tech in list_technologies if tech["id"] == technology_id), None
@@ -171,3 +177,92 @@ async def create_technology(technology: dict):
     technology["id"] = new_id
     list_technologies.append(technology)
     return {"message": "Technology created successfully", "technology": technology}
+
+
+@app.put("/technologies/{technology_id}")
+async def update_technology(technology_id: int, technology: dict):
+    if technology_id <= 0:
+        return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
+
+    existing_technology = next(
+        (tech for tech in list_technologies if tech["id"] == technology_id), None
+    )
+
+    if not existing_technology:
+        return JSONResponse(content={"error": "Technology not found"}, status_code=404)
+
+    updatable_fields = ("title", "description", "content")
+    technology_updates = {
+        key: value for key, value in technology.items() if key in updatable_fields
+    }
+
+    if not technology_updates:
+        return JSONResponse(
+            content={"error": "Title, description, and content must be strings"},
+            status_code=400,
+        )
+    if any(not isinstance(value, str) for value in technology_updates.values()):
+        return JSONResponse(
+            content={"error": "Title, description, and content must be strings"},
+            status_code=400,
+        )
+
+    merged_technology = {**existing_technology, **technology_updates}
+
+    if len(merged_technology["title"]) > 100:
+        return JSONResponse(
+            content={"error": "Title must be 100 characters or less"}, status_code=400
+        )
+    if len(merged_technology["description"]) > 300:
+        return JSONResponse(
+            content={"error": "Description must be 300 characters or less"},
+            status_code=400,
+        )
+    if len(merged_technology["content"]) > 1000:
+        return JSONResponse(
+            content={"error": "Content must be 1000 characters or less"},
+            status_code=400,
+        )
+    if len(merged_technology["title"].strip()) < 5:
+        return JSONResponse(
+            content={"error": "Title must be at least 5 characters long"},
+            status_code=400,
+        )
+    description_alnum_len = sum(
+        1 for ch in merged_technology["description"].strip() if ch.isalnum()
+    )
+    if description_alnum_len < 10:
+        return JSONResponse(
+            content={"error": "Description must be at least 10 characters long"},
+            status_code=400,
+        )
+    content_alnum_len = sum(
+        1 for ch in merged_technology["content"].strip() if ch.isalnum()
+    )
+    if content_alnum_len < 20:
+        return JSONResponse(
+            content={"error": "Content must be at least 20 characters long"},
+            status_code=400,
+        )
+
+    existing_technology.update(technology_updates)
+    return {
+        "message": "Technology updated successfully",
+        "technology": existing_technology,
+    }
+
+
+@app.delete("/technologies/{technology_id}")
+async def delete_technology(technology_id: int):
+    if technology_id <= 0:
+        return JSONResponse(content={"error": "Invalid technology ID"}, status_code=400)
+
+    existing_technology = next(
+        (tech for tech in list_technologies if tech["id"] == technology_id), None
+    )
+
+    if not existing_technology:
+        return JSONResponse(content={"error": "Technology not found"}, status_code=404)
+
+    list_technologies.remove(existing_technology)
+    return {"message": "Technology deleted successfully"}
