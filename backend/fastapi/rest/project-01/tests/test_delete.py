@@ -1,3 +1,4 @@
+import unittest
 from test_common import BaseApiTestCase, client
 
 
@@ -27,3 +28,7 @@ class TestDeleteEndpoints(BaseApiTestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["message"], "Post deleted successfully")
+
+
+if __name__ == "__main__":
+    unittest.main()

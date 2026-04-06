@@ -1,3 +1,4 @@
+import unittest
 from test_common import BaseApiTestCase, client
 
 
@@ -52,3 +53,7 @@ class TestPostEndpoints(BaseApiTestCase):
     def test_post_requires_fields_via_http(self):
         self.assertEqual(client.post("/posts", json={"content": "C" * 250}).status_code, 422)
         self.assertEqual(client.post("/posts", json={"title": "Valid Title"}).status_code, 422)
+
+
+if __name__ == "__main__":
+    unittest.main()

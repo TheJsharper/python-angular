@@ -1,3 +1,4 @@
+import unittest
 from test_common import BaseApiTestCase, client
 
 
@@ -26,3 +27,7 @@ class TestGetEndpoints(BaseApiTestCase):
     def test_get_post_invalid_id(self):
         response = client.get("/posts/abc")
         self.assertEqual(response.status_code, 422)
+
+
+if __name__ == "__main__":
+    unittest.main()

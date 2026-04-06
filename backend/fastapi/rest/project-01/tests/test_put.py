@@ -1,3 +1,4 @@
+import unittest
 from test_common import BaseApiTestCase, client
 
 
@@ -54,8 +55,19 @@ class TestPutEndpoints(BaseApiTestCase):
         response = client.put("/posts/1", json={})
         self.assertEqual(response.status_code, 422)
         self.assertIn("error", response.json())
-        self.assertEqual(client.put("/posts/1", data="This is not JSON").status_code, 422)
+        self.assertEqual(
+            client.put(
+                "/posts/1",
+                content="This is not JSON",
+                headers={"Content-Type": "application/json"},
+            ).status_code,
+            422,
+        )
 
     def test_put_post_invalid_id(self):
         update_data = {"title": "Updated Title", "content": "C" * 250}
         self.assertEqual(client.put("/posts/abc", json=update_data).status_code, 422)
+
+
+if __name__ == "__main__":
+    unittest.main()

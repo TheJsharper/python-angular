@@ -1,3 +1,4 @@
+import unittest
 from test_common import BaseApiTestCase, client
 
 
@@ -51,7 +52,14 @@ class TestPatchEndpoints(BaseApiTestCase):
         self.assertEqual(response.status_code, 422)
 
     def test_patch_post_transport_errors(self):
-        self.assertEqual(client.patch("/posts/1", data="This is not JSON").status_code, 422)
+        self.assertEqual(
+            client.patch(
+                "/posts/1",
+                content="This is not JSON",
+                headers={"Content-Type": "application/json"},
+            ).status_code,
+            422,
+        )
         self.assertEqual(client.patch("/posts/1", json={}).status_code, 422)
         no_json_response = client.patch("/posts/1")
         self.assertEqual(no_json_response.status_code, 422)
@@ -75,3 +83,7 @@ class TestPatchEndpoints(BaseApiTestCase):
         fetch_response = client.get("/posts/1")
         self.assertEqual(fetch_response.status_code, 200)
         self.assertEqual(fetch_response.json(), original_data)
+
+
+if __name__ == "__main__":
+    unittest.main()
