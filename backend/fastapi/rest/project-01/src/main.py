@@ -1,70 +1,13 @@
 from fastapi import Body, FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from validation import Post, PostCreate, PostPatch
+from pydantic import ValidationError
 
 app = FastAPI(
     title="Project 01",
     description="A simple FastAPI application for demonstration purposes.",
     version="1.0.0",
 )
-
-MIN_TITLE_LENGTH = 5
-MAX_TITLE_LENGTH = 150
-MIN_CONTENT_LENGTH = 250
-MAX_CONTENT_LENGTH = 1000
-
-
-def _validate_extra_properties(extra_properties: dict):
-    for key, value in extra_properties.items():
-        if not isinstance(value, str):
-            raise ValueError(f"Extra property '{key}' must be a string")
-        if len(value.strip()) == 0:
-            raise ValueError(f"Extra property '{key}' cannot be empty")
-        if len(value.strip()) > 200:
-            raise ValueError(f"Extra property '{key}' must be 200 characters or less")
-
-
-class Post(BaseModel):
-    id: int
-    title: str = Field(
-        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH
-    )
-    content: str = Field(
-        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH
-    )
-
-
-class PostCreate(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    title: str = Field(
-        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH
-    )
-    content: str = Field(
-        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH
-    )
-
-    @model_validator(mode="after")
-    def validate_extra_properties(self):
-        _validate_extra_properties(self.__pydantic_extra__ or {})
-        return self
-
-
-class PostPatch(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    title: str | None = Field(
-        default=None, min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH
-    )
-    content: str | None = Field(
-        default=None, min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH
-    )
-
-    @model_validator(mode="after")
-    def validate_patch_payload(self):
-        if self.title is None and self.content is None:
-            raise ValueError("At least one of title or content is required")
-        return self
 
 
 def build_default_posts():
