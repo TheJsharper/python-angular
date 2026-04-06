@@ -27,10 +27,10 @@ def _validate_extra_properties(extra_properties: dict):
 class Post(BaseModel):
     id: int
     title: str = Field(
-        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH, required=True
+        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH
     )
     content: str = Field(
-        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH, required=True
+        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH
     )
 
 
@@ -38,10 +38,10 @@ class PostCreate(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     title: str = Field(
-        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH, required=True
+        ..., min_length=MIN_TITLE_LENGTH, max_length=MAX_TITLE_LENGTH
     )
     content: str = Field(
-        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH, required=True
+        ..., min_length=MIN_CONTENT_LENGTH, max_length=MAX_CONTENT_LENGTH
     )
 
     @model_validator(mode="after")
