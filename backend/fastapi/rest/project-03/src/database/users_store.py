@@ -30,3 +30,8 @@ _users = [user.copy() for user in DEFAULT_USERS]
 
 def build_default_users():
     return _users
+
+
+def reset_users_store():
+    _users.clear()
+    _users.extend(user.copy() for user in DEFAULT_USERS)

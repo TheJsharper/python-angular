@@ -6,6 +6,8 @@ import unittest
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
+from database.users_store import reset_users_store
+
 
 class TestMain(unittest.TestCase):
     @classmethod
@@ -15,6 +17,9 @@ class TestMain(unittest.TestCase):
         from fastapi.testclient import TestClient
 
         cls.client = TestClient(cls.main_module.app)
+
+    def setUp(self):
+        reset_users_store()
 
     def test_health_check(self):
         response = self.client.get("/health")
@@ -422,6 +427,242 @@ class TestMain(unittest.TestCase):
         response = self.client.put("/users/999", json=updated_user_data)
         self.assertEqual(response.status_code, 404)  # Not Found
         self.assertIn("User not found", response.text)
+
+    def test_patch_user_partial_update(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "alice.patch@example.com",
+            "lastName": "Patched",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["email"], "alice.patch@example.com")
+        self.assertEqual(patched_user["lastName"], "Patched")
+        self.assertEqual(patched_user["firstName"], "Alice")
+
+    def test_patch_user_name_success(self):
+        patch_user_data = {
+            "id": 1,
+            "name": "Alice Renamed",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["name"], "Alice Renamed")
+        self.assertEqual(patched_user["email"], "alice@example.com")
+
+    def test_patch_user_email_success(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "alice.singlepatch@example.com",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["email"], "alice.singlepatch@example.com")
+        self.assertEqual(patched_user["name"], "alice")
+
+    def test_patch_user_role_success(self):
+        patch_user_data = {
+            "id": 1,
+            "role": "super-admin",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["role"], "super-admin")
+        self.assertEqual(patched_user["firstName"], "Alice")
+
+    def test_patch_user_first_name_success(self):
+        patch_user_data = {
+            "id": 1,
+            "firstName": "Alicia",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["firstName"], "Alicia")
+        self.assertEqual(patched_user["lastName"], "Johnson")
+
+    def test_patch_user_last_name_success(self):
+        patch_user_data = {
+            "id": 1,
+            "lastName": "Walker",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 200)
+        patched_user = response.json()
+        self.assertEqual(patched_user["id"], 1)
+        self.assertEqual(patched_user["lastName"], "Walker")
+        self.assertEqual(patched_user["firstName"], "Alice")
+
+    def test_patch_user_requires_field_besides_id(self):
+        patch_user_data = {
+            "id": 1,
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("At least one field besides id must be provided", response.text)
+
+    def test_patch_user_id_mismatch(self):
+        patch_user_data = {
+            "id": 2,
+            "email": "alice.patch@example.com",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.json()["error"], "Path user_id must match body id")
+
+    def test_patch_user_not_found(self):
+        patch_user_data = {
+            "id": 999,
+            "email": "nonexistent@example.com",
+        }
+        response = self.client.patch("/users/999", json=patch_user_data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "User not found")
+
+    def test_patch_user_invalid_email(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "invalidemail",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("email", response.text)
+
+    def test_patch_user_invalid_name(self):
+        patch_user_data = {
+            "id": 1,
+            "name": "",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("name", response.text)
+
+    def test_patch_user_invalid_role(self):
+        patch_user_data = {
+            "id": 1,
+            "role": "",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("role", response.text)
+
+    def test_patch_user_invalid_firstName(self):
+        patch_user_data = {
+            "id": 1,
+            "firstName": "",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("firstName", response.text)
+
+    def test_patch_user_invalid_lastName(self):
+        patch_user_data = {
+            "id": 1,
+            "lastName": "",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("lastName", response.text)
+
+    def test_patch_user_extra_fields(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "alice.extra@example.com",
+            "extra_field": "extra_value",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("extra_field", response.text)
+
+    def test_patch_user_email_pattern_validation(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "invalidemailpattern",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)  # Unprocessable Entity
+        self.assertIn("email", response.text)
+
+    def test_patch_user_email_length_validation(self):
+        patch_user_data = {
+            "id": 1,
+            "email": "a" * 101 + "@example.com",
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)  # Unprocessable Entity
+        self.assertIn("email", response.text)
+
+    def test_patch_user_name_length_validation(self):
+        patch_user_data = {
+            "id": 1,
+            "name": "a" * 101,
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)  # Unprocessable Entity
+        self.assertIn("name", response.text)
+
+    def test_patch_user_role_length_validation(self):
+        patch_user_data = {
+            "id": 1,
+            "role": "a" * 51,
+        }
+        response = self.client.patch("/users/1", json=patch_user_data)
+        self.assertEqual(response.status_code, 422)  # Unprocessable Entity
+        self.assertIn("role", response.text)
+
+    # ------------------------------------------------------------------
+    # DELETE /users/{user_id}
+    # ------------------------------------------------------------------
+
+    def test_delete_user_success(self):
+        response = self.client.delete("/users/1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "User deleted successfully")
+
+    def test_delete_user_no_longer_exists(self):
+        self.client.delete("/users/1")
+        response = self.client.get("/users/1")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "User not found")
+
+    def test_delete_user_removed_from_list(self):
+        self.client.delete("/users/2")
+        users = self.client.get("/users").json()
+        self.assertFalse(any(u["id"] == 2 for u in users))
+
+    def test_delete_user_not_found(self):
+        response = self.client.delete("/users/999")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "User not found")
+
+    def test_delete_user_invalid_id(self):
+        response = self.client.delete("/users/0")
+        self.assertEqual(response.status_code, 422)
+
+    def test_delete_user_negative_id(self):
+        response = self.client.delete("/users/-1")
+        self.assertEqual(response.status_code, 422)
+
+    def test_delete_user_non_integer_id(self):
+        response = self.client.delete("/users/abc")
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("int_parsing", response.text)
+
+    def test_delete_user_id_mismatch(self):
+        response = self.client.delete("/users/1")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.delete("/users/1")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "User not found")
 
 
 if __name__ == "__main__":

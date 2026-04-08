@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Path
 from fastapi.responses import JSONResponse
 from database.users_store import build_default_users
-from validation.user_schemas import User, UserCreate, UserModify
+from validation.user_schemas import User, UserCreate, UserModify, UserPartialModify
 
 app = FastAPI(
     title="Project 03",
@@ -77,3 +77,45 @@ async def update_user(
     }
     users[user_index] = updated_user
     return User(**updated_user)
+
+
+@app.patch("/users/{user_id}", response_model=User)
+async def modify_user(
+    user_id: int = Path(..., gt=0), user_update: UserPartialModify = ...
+) -> User | JSONResponse:
+    users = build_default_users()
+    user_index = next(
+        (index for index, user in enumerate(users) if user["id"] == user_id), None
+    )
+
+    if user_index is None:
+        return JSONResponse(content={"error": "User not found"}, status_code=404)
+
+    existing_user = users[user_index]
+
+    if user_update.id != user_id:
+        return JSONResponse(
+            content={"error": "Path user_id must match body id"}, status_code=422
+        )
+
+    updated_user = existing_user.copy()
+    partial_data = user_update.model_dump(exclude_none=True)
+    partial_data.pop("id", None)
+    updated_user.update(partial_data)
+
+    users[user_index] = updated_user
+    return User(**updated_user)
+
+
+@app.delete("/users/{user_id}")
+async def delete_user(user_id: int = Path(..., gt=0)) -> JSONResponse:
+    users = build_default_users()
+    user_index = next(
+        (index for index, user in enumerate(users) if user["id"] == user_id), None
+    )
+
+    if user_index is None:
+        return JSONResponse(content={"error": "User not found"}, status_code=404)
+
+    users.pop(user_index)
+    return JSONResponse(content={"message": "User deleted successfully"})
