@@ -1,6 +1,6 @@
 from fastapi import Body, FastAPI
 from fastapi.responses import JSONResponse
-from database import posts, reset_posts
+from database import posts
 from validation import Post, PostCreate, PostPatch
 from pydantic import ValidationError
 
@@ -9,6 +9,7 @@ app = FastAPI(
     description="A simple FastAPI application for demonstration purposes.",
     version="1.0.0",
 )
+
 
 @app.get("/posts")
 def get_posts() -> JSONResponse:
