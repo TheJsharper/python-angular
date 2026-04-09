@@ -6,15 +6,21 @@
 
 .sidenav {
   width: 240px;
-  background-color: var(--mat-sys-surface-container);
-  border-right: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  border-radius: 0;
 
   .sidenav-toolbar {
-    background-color: var(--mat-sys-surface-container);
-    color: var(--mat-sys-on-surface);
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
     font-size: 1.1rem;
     font-weight: 500;
     padding: 0 1rem;
+  }
+
+  a[mat-list-item],
+  mat-icon {
+    color: var(--mat-sys-on-primary);
   }
 
   .app-brand {
@@ -37,9 +43,12 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--mat-sys-surface-container-high);
-  color: var(--mat-sys-on-surface);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+  }
 
   .toolbar-title {
     margin-left: 0.5rem;

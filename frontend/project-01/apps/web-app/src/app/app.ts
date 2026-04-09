@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const THEMES = ['va-corporate', 'va-steel'] as const;
 type Theme = typeof THEMES[number];
 
