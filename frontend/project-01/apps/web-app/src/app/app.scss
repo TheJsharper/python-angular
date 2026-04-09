@@ -1,0 +1,57 @@
+.sidenav-container {
+  height: 100vh;
+  background-color: var(--mat-sys-background);
+  color: var(--mat-sys-on-background);
+}
+
+.sidenav {
+  width: 240px;
+  background-color: var(--mat-sys-surface-container);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+
+  .sidenav-toolbar {
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0 1rem;
+  }
+
+  .app-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+.active-link {
+  background-color: var(--mat-sys-secondary-container) !important;
+  color: var(--mat-sys-on-secondary-container) !important;
+
+  mat-icon {
+    color: var(--mat-sys-on-secondary-container);
+  }
+}
+
+.top-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  .toolbar-title {
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .toolbar-spacer {
+    flex: 1;
+  }
+}
+
+.page-content {
+  padding: 1.5rem;
+}
