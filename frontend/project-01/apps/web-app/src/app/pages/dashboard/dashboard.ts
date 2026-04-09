@@ -11,9 +11,17 @@ import { MatCardModule } from '@angular/material/card';
         <mat-card-subtitle>Overview of your data</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p>This is the dashboard page.</p>
+        @for (paragraph of paragraphs; track $index) {
+          <p>{{ paragraph }}</p>
+        }
       </mat-card-content>
     </mat-card>
   `,
 })
-export class DashboardComponent {}
+export class DashboardComponent {
+  protected readonly paragraphs = Array.from(
+    { length: 40 },
+    (_, i) =>
+      `${i + 1}. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc viverra, mauris vel suscipit cursus, velit velit placerat justo, sed luctus sapien lorem at neque. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+  );
+}

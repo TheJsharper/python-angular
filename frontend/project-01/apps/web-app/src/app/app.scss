@@ -23,6 +23,10 @@
     color: var(--mat-sys-on-primary);
   }
 
+  a[mat-list-item] {
+    border-radius: 0 !important;
+  }
+
   .app-brand {
     font-size: 1.1rem;
     font-weight: 700;
@@ -33,6 +37,7 @@
 .active-link {
   background-color: var(--mat-sys-secondary-container) !important;
   color: var(--mat-sys-on-secondary-container) !important;
+  border-radius: 0 !important;
 
   mat-icon {
     color: var(--mat-sys-on-secondary-container);
@@ -42,6 +47,8 @@
 .top-toolbar {
   position: sticky;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
@@ -62,5 +69,79 @@
 }
 
 .page-content {
-  padding: 1.5rem;
+  padding: 0px;
+}
+
+/* Scrollbar styling */
+.sidenav,
+mat-sidenav-content,
+.page-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-sys-secondary) var(--mat-sys-surface-container-high);
+}
+
+.sidenav::-webkit-scrollbar,
+mat-sidenav-content::-webkit-scrollbar,
+.page-content::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.sidenav::-webkit-scrollbar-track,
+mat-sidenav-content::-webkit-scrollbar-track,
+.page-content::-webkit-scrollbar-track {
+  background: var(--mat-sys-surface-container-high);
+}
+
+.sidenav::-webkit-scrollbar-thumb,
+mat-sidenav-content::-webkit-scrollbar-thumb,
+.page-content::-webkit-scrollbar-thumb {
+  background-color: var(--mat-sys-secondary);
+  border-radius: 0;
+  border: 2px solid var(--mat-sys-surface-container-high);
+}
+
+.sidenav::-webkit-scrollbar-thumb:hover,
+mat-sidenav-content::-webkit-scrollbar-thumb:hover,
+.page-content::-webkit-scrollbar-thumb:hover {
+  background-color: var(--mat-sys-secondary-fixed-dim);
+}
+
+/* YouTube-like dark mode overrides only */
+.sidenav-container.va-steel {
+  .sidenav {
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+
+    .sidenav-toolbar {
+      background-color: var(--mat-sys-surface-container);
+      color: var(--mat-sys-on-surface);
+    }
+
+    a[mat-list-item],
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  .top-toolbar {
+    background-color: var(--mat-sys-surface-container);
+    color: var(--mat-sys-on-surface);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  .active-link {
+    background-color: var(--mat-sys-surface-container-highest) !important;
+    color: var(--mat-sys-on-surface) !important;
+    border: 1px solid var(--mat-sys-on-surface-variant);
+    border-left: 3px solid var(--mat-sys-primary-fixed-dim);
+
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
 }

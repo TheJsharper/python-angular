@@ -11,9 +11,17 @@ import { MatCardModule } from '@angular/material/card';
         <mat-card-subtitle>Welcome to the application</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p>This is the home page.</p>
+        @for (paragraph of paragraphs; track $index) {
+          <p>{{ paragraph }}</p>
+        }
       </mat-card-content>
     </mat-card>
   `,
 })
-export class HomeComponent {}
+export class HomeComponent {
+  protected readonly paragraphs = Array.from(
+    { length: 40 },
+    (_, i) =>
+      `${i + 1}. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`
+  );
+}
