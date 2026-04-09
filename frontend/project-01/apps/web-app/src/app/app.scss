@@ -4,6 +4,12 @@
   color: var(--mat-sys-on-background);
 }
 
+.sidenav-container .mat-drawer-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .sidenav {
   width: 240px;
   background-color: var(--mat-sys-primary);
@@ -74,7 +80,18 @@
 }
 
 .page-content {
-  padding: 0px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.page-content > router-outlet + * {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
 }
 
 .mobile-foot-tab {
