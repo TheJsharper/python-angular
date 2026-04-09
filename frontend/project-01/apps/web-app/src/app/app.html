@@ -24,7 +24,7 @@
   <mat-sidenav-content>
     <!-- Top toolbar -->
     <mat-toolbar class="top-toolbar">
-      <button mat-icon-button (click)="sidenav.toggle()" aria-label="Toggle sidenav">
+      <button mat-icon-button class="menu-toggle-button" (click)="sidenav.toggle()" aria-label="Toggle sidenav">
         <mat-icon>menu</mat-icon>
       </button>
       <span class="toolbar-title">{{ title }}</span>
@@ -42,6 +42,20 @@
     <div class="page-content">
       <router-outlet />
     </div>
+
+    <!-- Mobile foot tab navigation -->
+    <nav class="mobile-foot-tab" aria-label="Mobile navigation">
+      @for (item of navItems; track item.route) {
+        <a
+          class="mobile-tab-item"
+          [routerLink]="item.route"
+          routerLinkActive="mobile-active-link"
+          [routerLinkActiveOptions]="{ exact: true }">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
   </mat-sidenav-content>
 
 </mat-sidenav-container>
