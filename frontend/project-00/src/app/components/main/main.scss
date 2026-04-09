@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+mat-toolbar {
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+mat-sidenav-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+mat-sidenav {
+  width: 250px;
+  border-right: 1px solid #e0e0e0;
+}
+
+mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+mat-nav-list {
+  padding-top: 0;
+}
+
+mat-list-item.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}

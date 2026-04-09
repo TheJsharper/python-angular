@@ -1,0 +1,29 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="toggleSidenav()" aria-label="Toggle sidenav">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>{{ title }}</span>
+  <span style="flex: 1"></span>
+  <button mat-icon-button (click)="toggleTheme()" [matTooltip]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'" aria-label="Toggle theme">
+    <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</mat-toolbar>
+
+<mat-sidenav-container>
+  <mat-sidenav [opened]="sidenavOpened()" mode="side">
+    <mat-nav-list>
+      @for (item of navItems; track item.route) {
+        <mat-list-item [routerLink]="item.route" routerLinkActive="active">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <a matListItemTitle [routerLink]="item.route">{{ item.label }}</a>
+        </mat-list-item>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+  
+  <mat-sidenav-content>
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
