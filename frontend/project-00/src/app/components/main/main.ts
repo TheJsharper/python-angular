@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { MatIconButton } from '@angular/material/button';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatListItem, MatListItemIcon, MatListItemTitle, MatNavList } from '@angular/material/list';
 import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
@@ -31,6 +31,7 @@ interface NavItem {
     MatListItemIcon,
     MatListItemTitle,
     MatIcon,
+    MatButtonModule,
     MatIconButton,
     MatTooltip,
   ],
@@ -48,6 +49,7 @@ export class Main {
     { label: 'About', icon: 'info', route: '/about' },
     { label: 'Services', icon: 'build', route: '/services' },
     { label: 'Contact', icon: 'mail', route: '/contact' },
+    { label: 'Elements', icon: 'science', route: '/chemical-elements' },
   ];
 
   toggleSidenav() {

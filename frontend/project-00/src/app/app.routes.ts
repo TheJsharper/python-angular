@@ -17,4 +17,8 @@ export const routes: Routes = [
     path: 'contact',
     loadComponent: () => import('./pages/contact/contact.component').then(m => m.ContactComponent)
   },
+  {
+    path: 'chemical-elements',
+    loadComponent: () => import('./pages/chemical-elements/chemical-elements.component').then(m => m.ChemicalElementsComponent)
+  },
 ];

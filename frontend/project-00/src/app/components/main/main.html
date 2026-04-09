@@ -25,5 +25,14 @@
     <div class="content-wrapper">
       <router-outlet></router-outlet>
     </div>
+
+    <nav class="mobile-foot-tab" aria-label="Bottom navigation">
+      @for (item of navItems; track item.route) {
+        <a mat-button class="mobile-tab-btn" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.route === '/' }">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
   </mat-sidenav-content>
 </mat-sidenav-container>

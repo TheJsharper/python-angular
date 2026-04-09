@@ -22,13 +22,17 @@ mat-sidenav {
 mat-sidenav-content {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .content-wrapper {
   flex: 1;
-  padding: 20px;
+  padding: 0;
+  margin: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 mat-nav-list {
@@ -37,4 +41,45 @@ mat-nav-list {
 
 mat-list-item.active {
   background-color: rgba(0, 0, 0, 0.04);
+}
+
+.mobile-foot-tab {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  mat-sidenav {
+    display: none;
+  }
+
+  .mobile-foot-tab {
+    position: sticky;
+    bottom: 0;
+    z-index: 12;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    min-height: 60px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    background: #1f1f1f;
+  }
+
+  .mobile-tab-btn {
+    min-width: 0;
+    height: 60px;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .mobile-tab-btn.active {
+    background-color: rgba(0, 188, 212, 0.22);
+  }
 }

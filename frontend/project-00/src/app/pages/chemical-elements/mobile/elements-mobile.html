@@ -1,0 +1,73 @@
+<div class="mobile-layout">
+  <div class="mobile-content">
+
+  <!-- Master: element list -->
+  <div class="list-panel" [class.hide-narrow]="!!selected()">
+    <mat-nav-list>
+      @for (el of elements; track el.position) {
+        <a mat-list-item
+           (click)="select(el)"
+           [class.active-item]="selected()?.position === el.position">
+          <div class="list-item-symbol" matListItemAvatar>{{ el.symbol }}</div>
+          <span matListItemTitle>{{ el.name }}</span>
+          <span matListItemLine>No. {{ el.position }} · {{ el.weight }}</span>
+        </a>
+        <mat-divider />
+      }
+    </mat-nav-list>
+  </div>
+
+  <!-- Detail panel -->
+  <div class="detail-panel" [class.show-narrow]="!!selected()">
+    @if (selected(); as el) {
+      <div class="detail-content">
+        <!-- Back button -->
+        <div class="detail-back">
+          <button mat-icon-button (click)="back()" aria-label="Back to list">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="detail-back-label">All Elements</span>
+        </div>
+
+        <!-- Element card -->
+        <div class="element-card">
+          <div class="element-tile">
+            <span class="tile-number">{{ el.position }}</span>
+            <span class="tile-symbol">{{ el.symbol }}</span>
+            <span class="tile-name">{{ el.name }}</span>
+            <span class="tile-weight">{{ el.weight }}</span>
+          </div>
+
+          <div class="element-props">
+            <div class="prop-row">
+              <span class="prop-label">Atomic Number</span>
+              <span class="prop-value">{{ el.position }}</span>
+            </div>
+            <mat-divider />
+            <div class="prop-row">
+              <span class="prop-label">Name</span>
+              <span class="prop-value">{{ el.name }}</span>
+            </div>
+            <mat-divider />
+            <div class="prop-row">
+              <span class="prop-label">Symbol</span>
+              <span class="prop-value">{{ el.symbol }}</span>
+            </div>
+            <mat-divider />
+            <div class="prop-row">
+              <span class="prop-label">Atomic Weight</span>
+              <span class="prop-value">{{ el.weight }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="no-selection">
+        <mat-icon>science</mat-icon>
+        <p>Select an element to view details</p>
+      </div>
+    }
+  </div>
+  </div>
+
+</div>
