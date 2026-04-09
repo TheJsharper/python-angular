@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { MatToolbar } from '@angular/material/toolbar';
-import { MatSidenavContainer, MatSidenav, MatSidenavContent } from '@angular/material/sidenav';
-import { MatNavList, MatListItem, MatListItemIcon, MatListItemTitle } from '@angular/material/list';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatListItem, MatListItemIcon, MatListItemTitle, MatNavList } from '@angular/material/list';
+import { MatSidenav, MatSidenavContainer, MatSidenavContent } from '@angular/material/sidenav';
+import { MatToolbar } from '@angular/material/toolbar';
 import { MatTooltip } from '@angular/material/tooltip';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 interface NavItem {
   label: string;
@@ -31,7 +31,6 @@ interface NavItem {
     MatListItemIcon,
     MatListItemTitle,
     MatIcon,
-    MatButton,
     MatIconButton,
     MatTooltip,
   ],
