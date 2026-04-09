@@ -9,6 +9,7 @@
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
   border-radius: 0;
+  border-right: 1px solid var(--mat-sys-outline-variant);
 
   .sidenav-toolbar {
     background-color: var(--mat-sys-primary);
@@ -68,6 +69,10 @@
   }
 }
 
+.toolbar-spacer {
+  flex: 1;
+}
+
 .page-content {
   padding: 0px;
 }
@@ -78,10 +83,6 @@
 
 @media (max-width: 768px) {
   .sidenav {
-    display: none;
-  }
-
-  .menu-toggle-button {
     display: none;
   }
 
