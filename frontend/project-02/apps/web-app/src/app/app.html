@@ -75,6 +75,35 @@ Apply border-radius: var(--brand-radius) on .my-{{ currentComponentSlug() }}.</p
           </mat-tab>
 
           <mat-tab label="Example">
+            <div class="example-topbar">
+              <span class="example-label">Use Case Example</span>
+              <div class="example-actions">
+                <button mat-stroked-button type="button" (click)="copyActiveSnippet()">
+                  <mat-icon>{{ copiedCode() ? 'check' : 'content_copy' }}</mat-icon>
+                  {{ copiedCode() ? 'Copied' : 'Copy Clipboard' }}
+                </button>
+                <button mat-stroked-button type="button" (click)="toggleCodePanel()">
+                  <mat-icon>code</mat-icon>
+                  {{ showCodePanel() ? 'Hide Code' : 'View Code' }}
+                </button>
+                <a mat-stroked-button [href]="materialExamplesUrl()" target="_blank" rel="noopener noreferrer">
+                  <mat-icon>open_in_new</mat-icon>
+                  Reference
+                </a>
+              </div>
+            </div>
+
+            @if (showCodePanel()) {
+              <section class="source-panel">
+                <div class="source-tab-nav">
+                  <button mat-button type="button" [class.active]="activeCodeTab() === 'html'" (click)="setCodeTab('html')">HTML</button>
+                  <button mat-button type="button" [class.active]="activeCodeTab() === 'ts'" (click)="setCodeTab('ts')">TS</button>
+                  <button mat-button type="button" [class.active]="activeCodeTab() === 'css'" (click)="setCodeTab('css')">CSS</button>
+                </div>
+                <pre class="code-block code-theme"><code [innerHTML]="highlightedSnippet()"></code></pre>
+              </section>
+            }
+
             <router-outlet />
           </mat-tab>
 

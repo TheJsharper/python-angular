@@ -1,6 +1,7 @@
 .sidenav-container {
   height: 100vh;
   display: flex;
+  width: 100%;
 }
 
 .sidenav {
@@ -53,12 +54,67 @@
   }
 }
 
+mat-sidenav-content {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .page-content {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   padding: 32px;
   box-sizing: border-box;
 }
 
 .docs-tabs {
+  .example-topbar {
+    margin-top: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .example-label {
+    font-size: 0.92rem;
+    color: var(--mat-sys-on-surface-variant);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  .example-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .source-panel {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  .source-tab-nav {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  .source-tab-nav .active {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+    border-radius: 8px;
+  }
+
   .docs-panel {
     padding: 20px 4px;
 
@@ -103,4 +159,67 @@
     font-size: 0.86rem;
     overflow-x: auto;
   }
+
+  .code-theme {
+    background: #1e1e1e;
+    border-color: #2d2d2d;
+    color: #d4d4d4;
+    font-family: Consolas, 'Courier New', monospace;
+    line-height: 1.55;
+  }
+
+  .code-theme code {
+    white-space: pre;
+    display: block;
+  }
+
+}
+
+:host ::ng-deep .code-theme .token.comment,
+:host ::ng-deep .code-theme .token.prolog,
+:host ::ng-deep .code-theme .token.doctype,
+:host ::ng-deep .code-theme .token.cdata {
+  color: #6a9955;
+}
+
+:host ::ng-deep .code-theme .token.keyword,
+:host ::ng-deep .code-theme .token.atrule {
+  color: #569cd6;
+}
+
+:host ::ng-deep .code-theme .token.class-name,
+:host ::ng-deep .code-theme .token.builtin {
+  color: #4ec9b0;
+}
+
+:host ::ng-deep .code-theme .token.string,
+:host ::ng-deep .code-theme .token.attr-value {
+  color: #ce9178;
+}
+
+:host ::ng-deep .code-theme .token.number,
+:host ::ng-deep .code-theme .token.unit,
+:host ::ng-deep .code-theme .token.hexcode {
+  color: #b5cea8;
+}
+
+:host ::ng-deep .code-theme .token.tag,
+:host ::ng-deep .code-theme .token.selector {
+  color: #569cd6;
+}
+
+:host ::ng-deep .code-theme .token.attr-name,
+:host ::ng-deep .code-theme .token.property {
+  color: #9cdcfe;
+}
+
+:host ::ng-deep .code-theme .token.function,
+:host ::ng-deep .code-theme .token.decorator,
+:host ::ng-deep .code-theme .token.annotation {
+  color: #c586c0;
+}
+
+:host ::ng-deep .code-theme .token.punctuation,
+:host ::ng-deep .code-theme .token.operator {
+  color: #d4d4d4;
 }

@@ -8,6 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-css';
+import { EXAMPLE_SNIPPETS } from './example-snippets';
 
 interface NavItem {
   label: string;
@@ -34,7 +41,7 @@ interface NavCategory {
     MatTabsModule,
   ],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
+  styleUrls: ['./app.scss'],
 })
 export class App {
   private readonly router = inject(Router);
@@ -43,12 +50,18 @@ export class App {
   protected darkMode = signal(false);
   protected docsTabIndex = signal(3);
   protected currentUrl = signal(this.router.url);
+  protected showCodePanel = signal(false);
+  protected activeCodeTab = signal<'html' | 'ts' | 'css'>('html');
+  protected copiedCode = signal(false);
 
   constructor() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.currentUrl.set(event.urlAfterRedirects);
         this.docsTabIndex.set(3);
+        this.showCodePanel.set(false);
+        this.activeCodeTab.set('html');
+        this.copiedCode.set(false);
       }
     });
   }
@@ -81,6 +94,134 @@ export class App {
     const slug = this.currentComponentSlug();
     return slug ? `https://material.angular.dev/components/${slug}/overview` : 'https://material.angular.dev/components';
   });
+
+  protected materialExamplesUrl = computed(() => {
+    const slug = this.currentComponentSlug();
+    if (!slug) {
+      return 'https://material.angular.dev/components';
+    }
+    if (slug === 'table') {
+      return 'https://material.angular.dev/cdk/table/examples';
+    }
+    return `https://material.angular.dev/components/${slug}/examples`;
+  });
+
+  protected selectorName = computed(() => {
+    const slug = this.currentComponentSlug();
+    return slug ? `lib-${slug}` : 'lib-component';
+  });
+
+  protected exampleHtmlSnippet = computed(() => {
+    const slug = this.currentComponentSlug();
+    const registryEntry = EXAMPLE_SNIPPETS[slug];
+    if (registryEntry?.html) {
+      return registryEntry.html;
+    }
+
+    const selector = this.selectorName();
+    return [
+      `<section class="example-shell">`,
+      `  <${selector}></${selector}>`,
+      `</section>`,
+    ].join('\n');
+  });
+
+  protected exampleTsSnippet = computed(() => {
+    const slug = this.currentComponentSlug();
+    const registryEntry = EXAMPLE_SNIPPETS[slug];
+    if (registryEntry?.ts) {
+      return this.normalizeTsTemplateDisplay(registryEntry.ts, slug);
+    }
+
+    const featureName = this.currentComponentName().replace(/\s+/g, '');
+    const importAlias = `@project-02/views-${slug === 'table' ? 'table' : slug === 'menu' || slug === 'paginator' || slug === 'tabs' ? 'navigation' : slug === 'card' || slug === 'divider' || slug === 'expansion' || slug === 'list' || slug === 'stepper' ? 'layout' : slug === 'bottom-sheet' || slug === 'dialog' || slug === 'snack-bar' || slug === 'tooltip' ? 'overlays' : slug === 'badge' || slug === 'button' || slug === 'button-toggle' || slug === 'chips' || slug === 'icon' || slug === 'progress-bar' || slug === 'progress-spinner' ? 'indicators' : 'form-controls'}`;
+    const componentName = `${featureName}Component`;
+
+    return [
+      `import { Component } from '@angular/core';`,
+      `import { ${componentName} } from '${importAlias}';`,
+      ``,
+      `@Component({`,
+      `  selector: 'app-example-host',`,
+      `  standalone: true,`,
+      `  imports: [${componentName}],`,
+      `  templateUrl: './example-host.html',`,
+      `})`,
+      `export class ExampleHostComponent {}`,
+    ].join('\n');
+  });
+
+  private normalizeTsTemplateDisplay(tsCode: string, slug: string): string {
+    const templateBlock = /\n\s*template\s*:\s*`[\s\S]*?`\s*,/m;
+    if (!templateBlock.test(tsCode)) {
+      return tsCode;
+    }
+
+    return tsCode.replace(
+      templateBlock,
+      `\n  templateUrl: './${slug}.html',`
+    );
+  }
+
+  protected exampleCssSnippet = computed(() => {
+    const slug = this.currentComponentSlug();
+    const registryEntry = EXAMPLE_SNIPPETS[slug];
+    if (registryEntry?.css) {
+      return registryEntry.css;
+    }
+
+    return [
+      `.example-shell {`,
+      `  padding: 16px;`,
+      `  border: 1px solid var(--mat-sys-outline-variant);`,
+      `  border-radius: 12px;`,
+      `}`,
+    ].join('\n');
+  });
+
+  protected activeSnippet = computed(() => {
+    const tab = this.activeCodeTab();
+    if (tab === 'ts') {
+      return this.exampleTsSnippet();
+    }
+    if (tab === 'css') {
+      return this.exampleCssSnippet();
+    }
+    return this.exampleHtmlSnippet();
+  });
+
+  protected highlightedSnippet = computed(() => {
+    const source = this.activeSnippet();
+    const tab = this.activeCodeTab();
+    const language = tab === 'html' ? 'markup' : tab === 'ts' ? 'typescript' : 'css';
+    const grammar = Prism.languages[language];
+    if (!grammar) {
+      return source;
+    }
+
+    const highlighted = Prism.highlight(source, grammar, language);
+    return tab === 'html' ? this.normalizeMarkupSpacing(highlighted) : highlighted;
+  });
+
+  private normalizeMarkupSpacing(highlighted: string): string {
+    // Prism may emit attribute tokens without a preserved leading space for Angular-style attrs.
+    // Prefix each attr token with a non-breaking space so markup always renders as `<tag attr="...">`.
+    return highlighted.replace(/<span class="token attr-name">/g, '&nbsp;<span class="token attr-name">');
+  }
+
+  protected toggleCodePanel(): void {
+    this.showCodePanel.update(v => !v);
+  }
+
+  protected setCodeTab(tab: 'html' | 'ts' | 'css'): void {
+    this.activeCodeTab.set(tab);
+  }
+
+  protected async copyActiveSnippet(): Promise<void> {
+    await navigator.clipboard.writeText(this.activeSnippet());
+    this.copiedCode.set(true);
+    setTimeout(() => this.copiedCode.set(false), 1400);
+  }
 
   protected sdkImportSnippet = computed(() => {
     const materialModule = this.currentMaterialModule();
