@@ -14,17 +14,16 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "ignoreDeprecations": "5.0",
-    "baseUrl": ".",
     "paths": {
-      "@project-02/views-table": ["libs/views/table/src/index.ts"],
+      "@project-02/views-table": ["./libs/views/table/src/index.ts"],
       "@project-02/views-form-controls": [
-        "libs/views/form-controls/src/index.ts"
+        "./libs/views/form-controls/src/index.ts"
       ],
-      "@project-02/views-navigation": ["libs/views/navigation/src/index.ts"],
-      "@project-02/views-layout": ["libs/views/layout/src/index.ts"],
-      "@project-02/views-indicators": ["libs/views/indicators/src/index.ts"],
-      "@project-02/views-overlays": ["libs/views/overlays/src/index.ts"],
-      "@project-02/views-home": ["libs/views/home/src/index.ts"]
+      "@project-02/views-navigation": ["./libs/views/navigation/src/index.ts"],
+      "@project-02/views-layout": ["./libs/views/layout/src/index.ts"],
+      "@project-02/views-indicators": ["./libs/views/indicators/src/index.ts"],
+      "@project-02/views-overlays": ["./libs/views/overlays/src/index.ts"],
+      "@project-02/views-home": ["./libs/views/home/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
