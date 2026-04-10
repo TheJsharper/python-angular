@@ -1,0 +1,106 @@
+<mat-sidenav-container class="sidenav-container" [class.dark-theme]="darkMode()">
+
+  <!-- Sidenav -->
+  <mat-sidenav #sidenav mode="side" [opened]="sidenavOpen()" class="sidenav">
+    <div class="sidenav-header">
+      <span class="brand">Angular Material</span>
+      <span class="brand-sub">Component Showcase</span>
+    </div>
+    <mat-divider />
+    @for (cat of navCategories; track cat.title) {
+      <div class="nav-category">{{ cat.title }}</div>
+      <mat-nav-list dense>
+        @for (item of cat.items; track item.route) {
+          <a mat-list-item
+             [routerLink]="item.route"
+             routerLinkActive="active-link"
+             [routerLinkActiveOptions]="{ exact: true }">
+            <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+            <span matListItemTitle>{{ item.label }}</span>
+          </a>
+        }
+      </mat-nav-list>
+    }
+  </mat-sidenav>
+
+  <!-- Main content -->
+  <mat-sidenav-content>
+    <mat-toolbar class="top-toolbar" color="primary">
+      <button mat-icon-button (click)="sidenav.toggle(); sidenavOpen.set(!sidenavOpen())" aria-label="Toggle menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Angular Material</span>
+      <span class="spacer"></span>
+      <button mat-icon-button
+        (click)="toggleDark()"
+        [matTooltip]="darkMode() ? 'Switch to light theme' : 'Switch to dark theme'">
+        <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+    </mat-toolbar>
+    <div class="page-content">
+      @if (isComponentRoute()) {
+        <mat-tab-group class="docs-tabs" [(selectedIndex)]="docsTabIndex">
+          <mat-tab label="Overview">
+            <section class="docs-panel">
+              <h2>{{ currentComponentName() }} Overview</h2>
+              <p>
+                Use {{ currentComponentName() }} when you need a production-ready UI primitive with accessibility,
+                keyboard support, and Angular-friendly APIs out of the box.
+              </p>
+            </section>
+          </mat-tab>
+
+          <mat-tab label="API">
+            <section class="docs-panel">
+              <h2>{{ currentComponentName() }} API</h2>
+              <p>
+                Full input, output, and usage documentation is available in the official Angular Material API docs.
+              </p>
+              <a class="docs-link" [href]="materialDocsUrl()" target="_blank" rel="noopener noreferrer">
+                Open API docs
+              </a>
+            </section>
+          </mat-tab>
+
+          <mat-tab label="Styling">
+            <section class="docs-panel">
+              <h2>{{ currentComponentName() }} Styling</h2>
+              <p>
+                Prefer Angular Material design tokens and theme variables so your custom styles stay compatible
+                across light/dark modes and future updates.
+              </p>
+              <pre class="code-block">Set a theme variable named --brand-radius to 12px.
+Apply border-radius: var(--brand-radius) on .my-{{ currentComponentSlug() }}.</pre>
+            </section>
+          </mat-tab>
+
+          <mat-tab label="Example">
+            <router-outlet />
+          </mat-tab>
+
+          <mat-tab label="SDK">
+            <section class="docs-panel">
+              <h2>{{ currentComponentName() }} SDK Quickstart</h2>
+              <p>Copy these steps to implement this component in any feature module or standalone screen.</p>
+
+              <h3>1) Install Material packages</h3>
+              <pre class="code-block">npm install @angular/material @angular/cdk</pre>
+
+              <h3>2) Import into your feature</h3>
+              <pre class="code-block">{{ sdkImportSnippet() }}</pre>
+              <p>
+                Some components need supporting modules too (for example datepicker with native date adapter).
+              </p>
+
+              <h3>3) Add to template</h3>
+              <p>Use the Example tab as the reference implementation for your team.</p>
+            </section>
+          </mat-tab>
+        </mat-tab-group>
+      } @else {
+        <router-outlet />
+      }
+    </div>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
