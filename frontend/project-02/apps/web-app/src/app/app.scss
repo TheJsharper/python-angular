@@ -135,6 +135,86 @@ mat-sidenav-content {
       color: var(--mat-sys-on-surface-variant);
       line-height: 1.55;
     }
+
+    .api-chip-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 14px;
+    }
+
+    .api-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      background: var(--mat-sys-surface-container-low);
+      font-size: 0.82rem;
+      color: var(--mat-sys-on-surface);
+      font-family: Consolas, 'Courier New', monospace;
+      cursor: pointer;
+      transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+    }
+
+    .api-chip.active {
+      background: var(--mat-sys-secondary-container);
+      border-color: var(--mat-sys-secondary);
+      color: var(--mat-sys-on-secondary-container);
+    }
+
+    .api-detail-card {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      border-radius: 10px;
+      background: var(--mat-sys-surface-container-low);
+    }
+
+    .api-meta-row {
+      margin-top: 6px;
+      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .api-meta-label {
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+    }
+
+    .api-members-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      border: 1px solid var(--mat-sys-outline-variant);
+      font-size: 0.85rem;
+    }
+
+    .api-members-table th,
+    .api-members-table td {
+      border: 1px solid var(--mat-sys-outline-variant);
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .api-members-table th {
+      background: var(--mat-sys-surface-container);
+      color: var(--mat-sys-on-surface);
+      font-weight: 600;
+    }
+
+    .inline-code {
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      font-size: 0.8rem;
+      white-space: normal;
+    }
   }
 
   .docs-link {

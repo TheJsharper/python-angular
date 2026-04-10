@@ -52,13 +52,100 @@
 
           <mat-tab label="API">
             <section class="docs-panel">
-              <h2>{{ currentComponentName() }} API</h2>
+              @if (isTableApiPage()) {
+                <h2>API reference for Angular CDK table</h2>
+                <pre class="code-block code-theme"><code>import &#123; CdkTableModule &#125; from '@angular/cdk/table';</code></pre>
+
+                @for (group of tableApiGroups; track group.title) {
+                  <h3>{{ group.title }}</h3>
+                  <div class="api-chip-grid">
+                    @for (item of group.items; track item) {
+                      <button
+                        type="button"
+                        class="api-chip"
+                        [class.active]="isSelectedTableApiItem(item)"
+                        (click)="selectTableApiItem(item)">
+                        {{ item }}
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (selectedTableApiDetail(); as detail) {
+                  <section class="api-detail-card">
+                    <h3>{{ detail.name }}</h3>
+                    <p>{{ detail.description }}</p>
+
+                    <div class="api-meta-row">
+                      <span class="api-meta-label">Selector:</span>
+                      <code>{{ detail.selector }}</code>
+                    </div>
+                    <div class="api-meta-row">
+                      <span class="api-meta-label">Exported as:</span>
+                      <code>{{ detail.exportedAs }}</code>
+                    </div>
+
+                    @if (detail.properties.length > 0) {
+                      <h3>Properties</h3>
+                      <table class="api-members-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (prop of detail.properties; track prop.name + prop.signature) {
+                            <tr>
+                              <td>
+                                <pre class="inline-code code-theme"><code [innerHTML]="highlightTs(prop.signature)"></code></pre>
+                              </td>
+                              <td>{{ prop.description }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+
+                    @if (detail.methods.length > 0) {
+                      <h3>Methods</h3>
+                      <table class="api-members-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (method of detail.methods; track method.name + method.signature) {
+                            <tr>
+                              <td>
+                                <pre class="inline-code code-theme"><code [innerHTML]="highlightTs(method.signature)"></code></pre>
+                              </td>
+                              <td>{{ method.description }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+                  </section>
+                }
+              } @else {
+                <h2>{{ currentComponentName() }} API</h2>
+              }
               <p>
-                Full input, output, and usage documentation is available in the official Angular Material API docs.
+                {{ currentApiData().description || 'Local package metadata is not available for this component.' }}
               </p>
+              <p>Type entry: {{ currentApiData().typesPath }}</p>
               <a class="docs-link" [href]="materialDocsUrl()" target="_blank" rel="noopener noreferrer">
                 Open API docs
               </a>
+
+              <h3>Type Definitions</h3>
+              <pre class="code-block code-theme"><code [innerHTML]="highlightTs(apiTypeDefinitionsSnippet())"></code></pre>
+
+              <h3>SCSS Sources</h3>
+              <pre class="code-block code-theme"><code [innerHTML]="highlightCss(apiScssSnippet())"></code></pre>
             </section>
           </mat-tab>
 
