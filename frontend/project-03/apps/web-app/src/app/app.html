@@ -1,0 +1,109 @@
+﻿<div class="ide-shell">
+  <!-- Activity Bar -->
+  <div class="activity-bar">
+    <button class="activity-btn" title="Explorer" (click)="togglePanel('split')">⊞</button>
+    <button class="activity-btn" title="Templates" (click)="openTemplateSelector()">⊕</button>
+  </div>
+
+  <!-- Sidebar: File Tree -->
+  <aside class="sidebar">
+    <app-file-tree
+      [nodes]="fileTree()"
+      [selectedPath]="activeFilePath()"
+      (fileSelected)="onFileSelected($event)"
+      (fileDeleted)="onFileDeleted($event)"
+      (refreshed)="wc.refreshFileTree()"
+    ></app-file-tree>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="main-area">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <span class="top-bar__brand">⚡ DevBox</span>
+      <div class="top-bar__tabs" *ngIf="openFiles().length > 0">
+        <button
+          *ngFor="let f of openFiles(); trackBy: trackByPath"
+          class="tab-btn"
+          [class.tab-btn--active]="activeFilePath() === f.path"
+          (click)="activeFilePath.set(f.path)"
+        >
+          {{ getTabName(f.path) }}<span *ngIf="f.dirty" class="tab-dirty">●</span>
+          <span class="tab-close" (click)="closeFile(f.path, $event)">×</span>
+        </button>
+      </div>
+      <div class="top-bar__actions">
+        <button class="icon-btn" title="Code" (click)="togglePanel('editor')">⌨</button>
+        <button class="icon-btn" title="Split" (click)="togglePanel('split')">⊟</button>
+        <button class="icon-btn" title="Preview" (click)="togglePanel('preview')">🌐</button>
+      </div>
+      <div class="boot-status" [class.boot-status--ready]="bootStatus() === 'ready'">
+        <span *ngIf="bootStatus() === 'booting'">⏳ Booting…</span>
+        <span *ngIf="bootStatus() === 'ready'">● Ready</span>
+        <span *ngIf="bootStatus() === 'error'" class="error">✗ Error: {{ bootError() || 'unknown' }}</span>
+        <span *ngIf="bootStatus() === 'idle'">○ Idle</span>
+      </div>
+    </header>
+
+    <!-- Editor / Preview Panes -->
+    <div class="work-area">
+      <!-- Editor Pane -->
+      <div class="pane pane--editor" *ngIf="panel() !== 'preview'">
+        <app-editor
+          *ngIf="activeFile(); else noFile"
+          [language]="activeFile()!.language"
+          [value]="activeFile()!.content"
+          (valueChange)="onEditorValueChange($event)"
+        ></app-editor>
+        <ng-template #noFile>
+          <div class="empty-editor">
+            <p>Select a file or <button class="link-btn" (click)="openTemplateSelector()">load a template</button></p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Preview Pane -->
+      <div class="pane pane--preview" *ngIf="panel() !== 'editor'">
+        <app-preview [url]="previewUrl()"></app-preview>
+      </div>
+    </div>
+
+    <!-- Bottom Panel -->
+    <div class="bottom-panel" [class.bottom-panel--hidden]="bottomPanel() === 'hidden'">
+      <div class="bottom-panel__tabs">
+        <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'terminal'" (click)="toggleBottomPanel('terminal')">TERMINAL</button>
+        <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'packages'" (click)="toggleBottomPanel('packages')">PACKAGES</button>
+        <button class="bottom-tab bottom-tab--close" (click)="toggleBottomPanel(bottomPanel())">×</button>
+      </div>
+      <div class="bottom-panel__content">
+        <app-terminal
+          [class.hidden]="bottomPanel() !== 'terminal'"
+          (data)="onTerminalData($event)"
+        ></app-terminal>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Selector Modal -->
+<div class="modal-overlay" *ngIf="showTemplateSelector()" (click)="closeTemplateSelector()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal__header">
+      <h2>Start from a template</h2>
+      <button class="icon-btn" (click)="closeTemplateSelector()">×</button>
+    </div>
+    <div class="modal__body">
+      <div class="template-grid">
+        <button
+          *ngFor="let t of templates()"
+          class="template-card"
+          (click)="loadTemplate(t)"
+        >
+          <div class="template-card__name">{{ t.name }}</div>
+          <div class="template-card__desc">{{ t.description }}</div>
+          <div class="template-card__badge">{{ t.language }}</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

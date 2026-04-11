@@ -1,0 +1,323 @@
+﻿/* =====================================================
+   DevBox - IDE Shell Styles
+   ===================================================== */
+
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { font-family: inherit; }
+
+/* === IDE Shell Grid === */
+.ide-shell {
+  display: grid;
+  grid-template-columns: 48px 220px 1fr;
+  grid-template-rows: 100vh;
+  height: 100vh;
+  background: #1e1e1e;
+  color: #cccccc;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+/* === Activity Bar === */
+.activity-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  gap: 4px;
+  background: #333333;
+  border-right: 1px solid #252526;
+}
+
+.activity-btn {
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+  }
+}
+
+/* === Sidebar === */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #252526;
+  border-right: 1px solid #1e1e1e;
+}
+
+/* === Main Area === */
+.main-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* === Top Bar === */
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 35px;
+  padding: 0 12px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #1e1e1e;
+  flex-shrink: 0;
+}
+
+.top-bar__brand {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.top-bar__tabs {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 35px;
+  background: #2d2d2d;
+  border: none;
+  color: #969696;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 12px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.1s;
+
+  &:hover { background: #3c3c3c; color: #cccccc; }
+  &--active { background: #1e1e1e; color: #ffffff; border-bottom-color: #007acc; }
+}
+
+.tab-dirty { color: #e8a44a; font-size: 10px; }
+.tab-close {
+  margin-left: 4px;
+  font-size: 14px;
+  opacity: 0.4;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 2px;
+
+  &:hover { opacity: 1; background: rgba(255,255,255,0.15); }
+}
+
+.top-bar__actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.boot-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #858585;
+  padding: 0 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+
+  &--ready { color: #4ec994; }
+  .error { color: #f48771; }
+}
+
+/* === Work Area === */
+.work-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &--editor { flex: 1.2; border-right: 1px solid #1e1e1e; }
+  &--preview { flex: 1; }
+}
+
+.empty-editor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #555;
+  font-size: 14px;
+}
+
+/* === Bottom Panel === */
+.bottom-panel {
+  display: flex;
+  flex-direction: column;
+  height: 220px;
+  background: #1e1e1e;
+  border-top: 1px solid #3e3e3e;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: height 0.2s;
+
+  &--hidden { height: 28px; }
+  &--hidden .bottom-panel__content { display: none; }
+}
+
+.bottom-panel__tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #3e3e3e;
+  flex-shrink: 0;
+}
+
+.bottom-tab {
+  padding: 4px 14px;
+  background: none;
+  border: none;
+  color: #858585;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid transparent;
+
+  &:hover { color: #cccccc; }
+  &--active { color: #cccccc; border-bottom-color: #007acc; }
+  &--close { margin-left: auto; font-size: 16px; font-weight: 400; padding: 4px 10px; }
+}
+
+.bottom-panel__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* === Shared Utilities === */
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #cccccc;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 1;
+
+  &:hover { background: rgba(255,255,255,0.1); }
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #4ec994;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: inherit;
+  padding: 0;
+}
+
+.hidden { display: none !important; }
+
+/* === Template Selector Modal === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #252526;
+  border: 1px solid #3e3e3e;
+  border-radius: 8px;
+  width: 640px;
+  max-width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #3e3e3e;
+
+  h2 { font-size: 16px; font-weight: 600; }
+}
+
+.modal__body {
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.template-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: #2d2d2d;
+  border: 1px solid #3e3e3e;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  color: #cccccc;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover { background: #3c3c3c; border-color: #007acc; }
+}
+
+.template-card__name { font-weight: 600; font-size: 14px; color: #ffffff; }
+.template-card__desc { font-size: 11px; color: #858585; line-height: 1.4; }
+.template-card__badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: #007acc;
+  color: #fff;
+  border-radius: 10px;
+  align-self: flex-start;
+  text-transform: uppercase;
+}
