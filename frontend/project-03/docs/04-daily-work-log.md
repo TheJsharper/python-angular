@@ -22,6 +22,14 @@
   - .env-template as safe reference (no secrets)
   - .gitignore rules for .env files in project-03
   - .gitignore created in parent folder for all projects
+- [T-2026-04-12-007] Implemented database abstraction layer:
+  - DatabaseConfig service for .env-based configuration
+  - IProjectRepository interface for abstraction
+  - InMemoryProjectRepository for dev mode
+  - PostgreSQL repository with TypeORM entities
+  - DatabaseService factory for selecting correct implementation
+  - Updated ProjectsService to use abstraction
+  - Updated AppModule and ProjectsModule to wire database
 
 ### Doing
 - [T-2026-04-12-007] PostgreSQL persistence implementation planning.

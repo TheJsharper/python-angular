@@ -1,68 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { DatabaseService } from '../database/database.service';
+import { Project } from '../database/project.repository.interface';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
-export interface ProjectFile {
-  path: string;
-  content: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  template: string;
-  files: ProjectFile[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-// In-memory store — replace with database in production
-const store = new Map<string, Project>();
-
 @Injectable()
 export class ProjectsService {
-  findAll(): Project[] {
-    return Array.from(store.values());
+  constructor(private databaseService: DatabaseService) {}
+
+  async findAll(): Promise<Project[]> {
+    return this.databaseService.getRepository().findAll();
   }
 
-  findOne(id: string): Project {
-    const project = store.get(id);
+  async findOne(id: string): Promise<Project> {
+    const project = await this.databaseService.getRepository().findOne(id);
     if (!project) {
       throw new NotFoundException(`Project ${id} not found`);
     }
     return project;
   }
 
-  create(dto: CreateProjectDto): Project {
-    const now = new Date().toISOString();
-    const project: Project = {
-      id: randomUUID(),
+  async create(dto: CreateProjectDto): Promise<Project> {
+    return this.databaseService.getRepository().create({
       name: dto.name,
       template: dto.template,
       files: dto.files ?? [],
-      createdAt: now,
-      updatedAt: now,
-    };
-    store.set(project.id, project);
-    return project;
+    });
   }
 
-  update(id: string, dto: UpdateProjectDto): Project {
-    const project = this.findOne(id);
-    const updated: Project = {
-      ...project,
+  async update(id: string, dto: UpdateProjectDto): Promise<Project> {
+    const existing = await this.findOne(id);
+    return this.databaseService.getRepository().update(id, {
+      ...existing,
       ...dto,
-      updatedAt: new Date().toISOString(),
-    };
-    store.set(id, updated);
-    return updated;
+    });
   }
 
-  remove(id: string): void {
-    if (!store.has(id)) {
-      throw new NotFoundException(`Project ${id} not found`);
-    }
-    store.delete(id);
+  async remove(id: string): Promise<void> {
+    return this.databaseService.getRepository().remove(id);
   }
 }

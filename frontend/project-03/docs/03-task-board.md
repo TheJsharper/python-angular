@@ -20,7 +20,7 @@
 | T-2026-04-12-004 | UI notifications/errors | P0 | TODO | Pedro/Copilot | 2026-04-12 | 2026-04-14 | - | Unified success/error toasts |
 | T-2026-04-12-005 | Iteration docs baseline | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Product brief + iteration instructions + this task system |
 | T-2026-04-12-006 | Nx start scripts for both apps | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Added package scripts to run api + web-app together |
-| T-2026-04-12-007 | PostgreSQL persistence implementation | P0 | TODO | Pedro/Copilot | 2026-04-12 | 2026-04-14 | - | Replace in-memory ProjectsService store with PostgreSQL + migrations |
+| T-2026-04-12-007 | PostgreSQL persistence implementation | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Database abstraction layer with in-memory and PostgreSQL support |
 | T-2026-04-12-008 | Environment configuration (.env/.env-template) | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Dev: in-memory, Prod: PostgreSQL config with .gitignore |
 
 ## How To Update
