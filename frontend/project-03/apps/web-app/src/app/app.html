@@ -38,6 +38,7 @@
         <button class="icon-btn" title="Code" (click)="togglePanel('editor')">⌨</button>
         <button class="icon-btn" title="Split" (click)="togglePanel('split')">⊟</button>
         <button class="icon-btn" title="Preview" (click)="togglePanel('preview')">🌐</button>
+        <button class="icon-btn" title="Run" (click)="runStartCommand()">▶</button>
       </div>
       <div class="boot-status" [class.boot-status--ready]="bootStatus() === 'ready'">
         <span *ngIf="bootStatus() === 'booting'">⏳ Booting…</span>
@@ -46,7 +47,7 @@
         <span *ngIf="bootStatus() === 'idle'">○ Idle</span>
       </div>
       <div class="run-status" [class.run-status--active]="runStage() !== 'idle'" [class.run-status--running]="runStage() === 'running'" [class.run-status--error]="runStage() === 'error'">
-        <span *ngIf="runStage() === 'idle'">Template: idle</span>
+        <span *ngIf="runStage() === 'idle'">Template: ready</span>
         <span *ngIf="runStage() === 'preparing'">Template: preparing</span>
         <span *ngIf="runStage() === 'installing'">Template: installing ({{ runSeconds() }}s)</span>
         <span *ngIf="runStage() === 'starting'">Template: starting ({{ runSeconds() }}s)</span>
@@ -107,6 +108,8 @@
       <div class="bottom-panel__tabs">
         <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'terminal'" (click)="toggleBottomPanel('terminal')">TERMINAL</button>
         <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'packages'" (click)="toggleBottomPanel('packages')">PACKAGES</button>
+        <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'logs'" (click)="toggleBottomPanel('logs')">RUN LOGS</button>
+        <button class="bottom-tab bottom-tab--new" title="New Terminal" (click)="newTerminal()">＋</button>
         <button class="bottom-tab bottom-tab--close" (click)="toggleBottomPanel(bottomPanel())">×</button>
       </div>
       <div class="bottom-panel__content">
@@ -114,6 +117,16 @@
           [class.hidden]="bottomPanel() !== 'terminal'"
           (data)="onTerminalData($event)"
         ></app-terminal>
+        <section class="run-logs" [class.hidden]="bottomPanel() !== 'logs'">
+          <div class="run-logs__actions">
+            <button class="run-logs__btn" type="button" (click)="clearRunLogs('Logs cleared')">Clear</button>
+            <button class="run-logs__btn" type="button" (click)="copyRunLogs()">Copy</button>
+          </div>
+          <div class="run-logs__content">
+            <p class="run-logs__empty" *ngIf="recentRunLogs().length === 0">No logs captured yet.</p>
+            <pre class="run-logs__line" *ngFor="let line of recentRunLogs()">{{ line }}</pre>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -127,10 +140,28 @@
       <button class="icon-btn" (click)="closeTemplateSelector()">×</button>
     </div>
     <div class="modal__body">
-      <div class="template-grid">
+      <div class="template-state" *ngIf="templateActionInProgress() && selectedTemplate() as activeTemplate">
+        <p>Creating {{ activeTemplate.name }}...</p>
+        <p class="template-state__details">The workspace is installing dependencies and starting the server. Watch terminal logs for live progress.</p>
+      </div>
+      <div class="template-state" *ngIf="templatesLoading()">
+        <p>Loading templates...</p>
+      </div>
+      <div class="template-state template-state--error" *ngIf="templatesError() && !templatesLoading()">
+        <p>Could not load templates.</p>
+        <p class="template-state__details">{{ templatesError() }}</p>
+        <button class="link-btn" (click)="retryTemplates()">Retry</button>
+      </div>
+      <div class="template-state" *ngIf="!templatesLoading() && !templatesError() && templates().length === 0">
+        <p>No templates available.</p>
+        <button class="link-btn" (click)="retryTemplates()">Refresh</button>
+      </div>
+      <div class="template-grid" *ngIf="!templatesLoading() && !templatesError() && templates().length > 0">
         <button
           *ngFor="let t of templates()"
           class="template-card"
+          [class.template-card--active]="selectedTemplate()?.id === t.id"
+          [disabled]="templateActionInProgress()"
           (click)="loadTemplate(t)"
         >
           <div class="template-card__name">{{ t.name }}</div>

@@ -43,6 +43,17 @@
   - Reduced noisy redraw behavior using no-progress flags for install/start
   - Added terminal auto-scroll and visible scrollbar styling
   - Added draggable resizing for explorer, editor/preview split, and terminal panel
+- [T-2026-04-12-011] Completed shell flow type safety and reset stability:
+  - Fixed TS2349 in app shell terminal flow by removing invalid never narrowing path
+  - Refactored new terminal creation branch to keep callable writer typing intact
+  - Revalidated app compile after fix (noEmit type check passed)
+- [T-2026-04-12-012] Completed template startup resilience and unblock UX:
+  - Added template action guard to prevent duplicate concurrent template starts
+  - Improved Angular template lifecycle messages with explicit auto-start step
+  - Added startup watchdog fallback to avoid indefinite blocking state during start
+  - Added auto-open of preferred source file after scaffold/install to speed continuation
+  - Unlocked template modal close behavior to prevent interaction dead-end
+  - Added clearer terminal messaging when install/start is slow or fails
 
 ### Doing
 - None.
@@ -52,6 +63,7 @@
 - [T-2026-04-12-002] Build package panel install flow.
 - [T-2026-04-12-003] Add top bar Run and Install actions.
 - [T-2026-04-12-004] Add notification/toast system.
+- Add install-stage watchdog and structured run-log panel actions (clear/copy) as follow-up hardening.
 
 ### Blockers
 - None currently.

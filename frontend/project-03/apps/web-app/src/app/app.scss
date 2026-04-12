@@ -275,7 +275,8 @@ button { font-family: inherit; }
 
   &:hover { color: #cccccc; }
   &--active { color: #cccccc; border-bottom-color: #007acc; }
-  &--close { margin-left: auto; font-size: 16px; font-weight: 400; padding: 4px 10px; }
+  &--new  { margin-left: auto; font-size: 16px; font-weight: 400; padding: 4px 10px; color: #4ec9b0; &:hover { color: #9cdcfe; } }
+  &--close { font-size: 16px; font-weight: 400; padding: 4px 10px; }
 }
 
 .bottom-panel__content {
@@ -283,6 +284,56 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.run-logs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #151515;
+  color: #cfcfcf;
+}
+
+.run-logs__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #2e2e2e;
+}
+
+.run-logs__btn {
+  border: 1px solid #3e3e3e;
+  background: #262626;
+  color: #cfcfcf;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background: #333333;
+    border-color: #6a6a6a;
+  }
+}
+
+.run-logs__content {
+  flex: 1;
+  overflow: auto;
+  padding: 8px 10px 12px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.run-logs__empty {
+  color: #8e8e8e;
+}
+
+.run-logs__line {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* === Shared Utilities === */
@@ -349,6 +400,29 @@ button { font-family: inherit; }
   padding: 20px;
 }
 
+.template-state {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #3e3e3e;
+  border-radius: 6px;
+  color: #cccccc;
+
+  &--error {
+    border-color: #6b2d25;
+    background: #2f1b18;
+    color: #f48771;
+  }
+}
+
+.template-state__details {
+  color: #a8a8a8;
+  font-size: 12px;
+}
+
 .template-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -369,6 +443,16 @@ button { font-family: inherit; }
   transition: border-color 0.15s, background 0.15s;
 
   &:hover { background: #3c3c3c; border-color: #007acc; }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+
+  &--active {
+    border-color: #4ec994;
+    box-shadow: 0 0 0 1px rgba(78, 201, 148, 0.35) inset;
+  }
 }
 
 .template-card__name { font-weight: 600; font-size: 14px; color: #ffffff; }

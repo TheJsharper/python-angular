@@ -24,6 +24,8 @@
 | T-2026-04-12-008 | Environment configuration (.env/.env-template) | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Dev: in-memory, Prod: PostgreSQL config with .gitignore |
 | T-2026-04-12-009 | Angular template full scaffold + auto-run | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Template now includes full Angular CLI-like files/folders; auto runs install/start in WebContainer terminal |
 | T-2026-04-12-010 | Runtime UX hardening (logs/preview/layout) | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Added progress indicators, heartbeat logs, preview URL fallback, terminal scrollbar, and draggable explorer/split/terminal |
+| T-2026-04-12-011 | Shell flow type safety and reset stability | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Fixed TS2349 never-call issue in newTerminal and stabilized shell reset/new terminal behavior |
+| T-2026-04-12-012 | Template startup resilience and unblock UX | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Added stronger template progress states, startup watchdog recovery, modal unblock behavior, and auto-open of main workspace file |
 
 ## How To Update
 1. Always create a new Task ID using: T-YYYY-MM-DD-XXX.
