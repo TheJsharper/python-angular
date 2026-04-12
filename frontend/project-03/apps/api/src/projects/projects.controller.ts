@@ -18,28 +18,28 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.projectsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.projectsService.findOne(id);
   }
 
   @Post()
-  create(@Body() dto: CreateProjectDto) {
+  async create(@Body() dto: CreateProjectDto) {
     return this.projectsService.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateProjectDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateProjectDto) {
     return this.projectsService.update(id, dto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.projectsService.remove(id);
   }
 }
