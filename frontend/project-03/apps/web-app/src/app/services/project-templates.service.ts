@@ -36,6 +36,11 @@ export class ProjectTemplatesService {
     return this.templateList$;
   }
 
+  refreshTemplates(): Observable<TemplateInfo[]> {
+    this.templateList$ = null;
+    return this.getTemplates();
+  }
+
   getTemplate(id: string): Observable<TemplateDetail> {
     return this.http.get<TemplateDetail>(`${this.baseUrl}/templates/${id}`);
   }

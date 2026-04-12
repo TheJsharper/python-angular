@@ -29,11 +29,14 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
   private terminal: Terminal | null = null;
   private fitAddon: FitAddon | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private pendingWrites: Array<{ text: string; line: boolean }> = [];
 
   ngAfterViewInit(): void {
     this.terminal = new Terminal({
       cursorBlink: true,
       fontSize: 13,
+      scrollback: 10000,
+      convertEol: true,
       fontFamily: "'Cascadia Code', 'Fira Code', 'Consolas', monospace",
       theme: {
         background: '#1e1e1e',
@@ -70,6 +73,19 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
       this.fitAddon?.fit();
     });
     this.resizeObserver.observe(this.container.nativeElement);
+
+    if (this.pendingWrites.length > 0) {
+      const queued = [...this.pendingWrites];
+      this.pendingWrites = [];
+      for (const entry of queued) {
+        if (entry.line) {
+          this.terminal.writeln(this.normalizeOutput(entry.text));
+        } else {
+          this.terminal.write(this.normalizeOutput(entry.text));
+        }
+      }
+      this.terminal.scrollToBottom();
+    }
   }
 
   ngOnDestroy(): void {
@@ -78,12 +94,20 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
   }
 
   write(data: string): void {
-    this.terminal?.write(data);
+    if (!this.terminal) {
+      this.pendingWrites.push({ text: data, line: false });
+      return;
+    }
+    this.terminal?.write(this.normalizeOutput(data));
     this.terminal?.scrollToBottom();
   }
 
   writeLine(line: string): void {
-    this.terminal?.writeln(line);
+    if (!this.terminal) {
+      this.pendingWrites.push({ text: line, line: true });
+      return;
+    }
+    this.terminal?.writeln(this.normalizeOutput(line));
     this.terminal?.scrollToBottom();
   }
 
@@ -100,5 +124,20 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
 
   focus(): void {
     this.terminal?.focus();
+  }
+
+  refresh(): void {
+    if (!this.terminal) return;
+    requestAnimationFrame(() => this.fitAddon?.fit());
+    setTimeout(() => this.fitAddon?.fit(), 0);
+  }
+
+  private normalizeOutput(data: string): string {
+    // Strip ANSI control/color sequences so logs stay readable and visible.
+    return data
+      .replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      .replace(/\x1B\][^\x07]*(\x07|\x1B\\)/g, '')
+      .replace(/\x1B[P^_][\s\S]*?\x1B\\/g, '')
+      .replace(/\r(?!\n)/g, '\n');
   }
 }

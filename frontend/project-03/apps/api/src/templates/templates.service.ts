@@ -31,7 +31,7 @@ const TEMPLATES: Template[] = [
             private: true,
             scripts: {
               ng: 'ng',
-              start: 'ng serve --no-progress',
+              start: 'ng serve --host 0.0.0.0 --port 4200 --no-progress --verbose',
               build: 'ng build',
               watch: 'ng build --watch --configuration development',
               test: 'ng test',

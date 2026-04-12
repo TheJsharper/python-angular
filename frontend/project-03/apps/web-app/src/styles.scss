@@ -20,7 +20,9 @@ html, body {
 }
 
 .xterm .xterm-viewport {
-	overflow-y: auto !important;
+	overflow-y: scroll !important;
+	overflow-x: hidden !important;
+	overscroll-behavior: contain;
 	scrollbar-width: thin;
 	scrollbar-color: #5a5a5a #1e1e1e;
 }
