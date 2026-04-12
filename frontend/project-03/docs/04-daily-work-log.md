@@ -8,6 +8,11 @@
   - 03-task-board.md
   - 04-daily-work-log.md
   - 05-commit-convention.md
+- [T-2026-04-12-006] Added Nx package scripts for simple startup:
+  - npm run start (api + web-app)
+  - npm run start:all (api + web-app)
+  - npm run start:api
+  - npm run start:web
 
 ### Doing
 - [T-2026-04-12-001] Plan persistence design (options and trade-offs).

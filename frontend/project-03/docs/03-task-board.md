@@ -19,6 +19,7 @@
 | T-2026-04-12-003 | Run and Install top actions | P0 | TODO | Pedro/Copilot | 2026-04-12 | 2026-04-14 | - | Add top bar actions and command presets |
 | T-2026-04-12-004 | UI notifications/errors | P0 | TODO | Pedro/Copilot | 2026-04-12 | 2026-04-14 | - | Unified success/error toasts |
 | T-2026-04-12-005 | Iteration docs baseline | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Product brief + iteration instructions + this task system |
+| T-2026-04-12-006 | Nx start scripts for both apps | P0 | DONE | Copilot | 2026-04-12 | 2026-04-12 | 2026-04-12 | Added package scripts to run api + web-app together |
 
 ## How To Update
 1. Always create a new Task ID using: T-YYYY-MM-DD-XXX.

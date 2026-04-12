@@ -2,7 +2,13 @@
   "name": "@project-03/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "nx": "nx",
+    "start": "nx run-many -t serve -p api web-app --parallel=2",
+    "start:all": "nx run-many -t serve -p api web-app --parallel=2",
+    "start:api": "nx serve api",
+    "start:web": "nx serve web-app"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~21.2.0",
