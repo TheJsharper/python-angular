@@ -17,6 +17,11 @@
   - PostgreSQL-first data architecture documented
   - Redis/object storage support plan added
   - GitHub/GitLab/bare-repo integration strategy defined
+- [T-2026-04-12-008] Added environment configuration:
+  - .env for local development (in-memory database)
+  - .env-template as safe reference (no secrets)
+  - .gitignore rules for .env files in project-03
+  - .gitignore created in parent folder for all projects
 
 ### Doing
 - [T-2026-04-12-007] PostgreSQL persistence implementation planning.

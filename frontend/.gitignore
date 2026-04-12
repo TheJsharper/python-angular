@@ -1,0 +1,43 @@
+# .env files and local environment overrides across all projects
+.env
+.env.local
+.env.*.local
+.env.*.prod
+
+# Keep template files for reference
+!.env-template
+!*.env-template.md
+
+# Node/npm
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Nx cache
+.nx/cache
+.nx/workspace-data
+
+# Angular
+.angular/
+
+# Logs
+logs/
+*.log

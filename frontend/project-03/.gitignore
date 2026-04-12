@@ -46,3 +46,11 @@ Thumbs.db
 .angular
 
 __screenshots__/
+
+# Environment files (secrets should never be committed)
+.env
+.env.local
+.env.*.local
+
+# Keep template as reference
+!.env-template
