@@ -79,10 +79,12 @@ export class TerminalComponent implements AfterViewInit, OnDestroy {
 
   write(data: string): void {
     this.terminal?.write(data);
+    this.terminal?.scrollToBottom();
   }
 
   writeLine(line: string): void {
     this.terminal?.writeln(line);
+    this.terminal?.scrollToBottom();
   }
 
   clear(): void {

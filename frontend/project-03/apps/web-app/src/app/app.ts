@@ -6,6 +6,8 @@
   signal,
   computed,
   ViewChild,
+  ElementRef,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +20,8 @@ import { ProjectTemplatesService, TemplateInfo, TemplateDetail } from './service
 
 type Panel = 'editor' | 'preview' | 'split';
 type BottomPanel = 'terminal' | 'packages' | 'hidden';
+type RunStage = 'idle' | 'preparing' | 'installing' | 'starting' | 'running' | 'error';
+type ResizeTarget = 'explorer' | 'editorSplit' | 'terminal';
 
 interface OpenFile {
   path: string;
@@ -48,12 +52,21 @@ export class AppComponent implements OnInit, OnDestroy {
   private templatesService = inject(ProjectTemplatesService);
 
   @ViewChild(TerminalComponent) terminalRef?: TerminalComponent;
+  @ViewChild('ideShell') ideShellRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('workArea') workAreaRef?: ElementRef<HTMLDivElement>;
 
   // State
   readonly bootStatus = this.wc.bootStatus;
   readonly bootError = signal('');
   readonly previewUrl = this.wc.previewUrl;
   readonly fileTree = signal<FileNode[]>([]);
+  readonly runStage = signal<RunStage>('idle');
+  readonly runMessage = signal('');
+  readonly runSeconds = signal(0);
+  readonly explorerWidth = signal(220);
+  readonly editorPaneWidth = signal(58);
+  readonly terminalHeight = signal(220);
+  readonly isResizing = signal(false);
 
   templates = signal<TemplateInfo[]>([]);
   selectedTemplate = signal<TemplateInfo | null>(null);
@@ -68,9 +81,25 @@ export class AppComponent implements OnInit, OnDestroy {
   readonly activeFile = computed(() =>
     this.openFiles().find(f => f.path === this.activeFilePath())
   );
+  readonly ideGridColumns = computed(() => `48px ${this.explorerWidth()}px 4px 1fr`);
 
   private shellWriter: ((data: string) => void) | null = null;
   private shellKill: (() => void) | null = null;
+  private runSecondsTimer: ReturnType<typeof setInterval> | null = null;
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private removeResizeListeners: (() => void) | null = null;
+
+  private readonly previewReadyEffect = effect(() => {
+    const url = this.previewUrl();
+    if (!url) return;
+    if (this.runStage() === 'installing' || this.runStage() === 'starting' || this.runStage() === 'preparing') {
+      this.runStage.set('running');
+      this.runMessage.set('Dev server is running');
+      this.stopProgressTimers();
+      this.terminalRef?.writeLine('> Preview ready. App is running.');
+      this.terminalRef?.writeLine(`> URL: ${url}`);
+    }
+  });
 
   async ngOnInit(): Promise<void> {
     this.templatesService.getTemplates().subscribe(t => this.templates.set(t));
@@ -88,6 +117,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.stopProgressTimers();
+    this.stopResize();
     this.shellKill?.();
     this.wc.teardown();
   }
@@ -98,12 +129,25 @@ export class AppComponent implements OnInit, OnDestroy {
     this.openFiles.set([]);
     this.activeFilePath.set('');
     this.terminalRef?.clear();
+    this.runStage.set('preparing');
+    this.runMessage.set('Loading template files');
+    this.runSeconds.set(0);
 
-    this.templatesService.getTemplate(template.id).subscribe(async (detail: TemplateDetail) => {
-      await this.wc.loadTemplateFiles(detail.files);
-      if (detail.files.length > 0) {
-        this.openFile(detail.files[0].path, detail.files[0].content);
-      }
+    this.templatesService.getTemplate(template.id).subscribe({
+      next: async (detail: TemplateDetail) => {
+        await this.wc.loadTemplateFiles(detail.files);
+        if (detail.files.length > 0) {
+          this.openFile(detail.files[0].path, detail.files[0].content);
+        }
+        await this.runTemplateBootstrap(detail);
+      },
+      error: (err) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        this.stopProgressTimers();
+        this.runStage.set('error');
+        this.runMessage.set(msg);
+        this.terminalRef?.writeLine(`Failed to load template: ${msg}`);
+      },
     });
   }
 
@@ -169,16 +213,93 @@ export class AppComponent implements OnInit, OnDestroy {
     this.shellWriter?.(data);
   }
 
+  private async runTemplateBootstrap(detail: TemplateDetail): Promise<void> {
+    const hasPackageJson = detail.files.some((file) => file.path === 'package.json');
+    if (!hasPackageJson) {
+      this.runStage.set('idle');
+      this.runMessage.set('No package.json found in template');
+      return;
+    }
+
+    const startCommand = detail.framework === 'angular' ? 'npm run start' : 'npm run dev';
+    this.bottomPanel.set('terminal');
+    this.runStage.set('installing');
+    this.runMessage.set('Installing dependencies');
+    this.startProgressTimers();
+    this.terminalRef?.writeLine('');
+    this.terminalRef?.writeLine('> Preparing template workspace...');
+    this.terminalRef?.writeLine('> Auto setup: npm install --no-audit --no-fund --no-progress');
+    this.terminalRef?.writeLine(`> Auto run: ${startCommand}`);
+    this.terminalRef?.writeLine('> Press Ctrl+C in terminal to stop the running app.');
+    this.terminalRef?.writeLine('> Preview appears when the dev server reports ready.');
+
+    if (!this.shellWriter) {
+      await this.startShell();
+    }
+
+    const command = detail.framework === 'angular'
+      ? 'npm install --no-audit --no-fund --no-progress && echo "[devbox] install done" && npm run start -- --no-progress\r'
+      : 'npm install --no-audit --no-fund --no-progress && echo "[devbox] install done" && npm run dev\r';
+
+    this.shellWriter?.(command);
+  }
+
   private async startShell(): Promise<void> {
     try {
       const { write, kill } = await this.wc.spawnShell(
-        (output) => this.terminalRef?.write(output),
+        (output) => {
+          if (output.includes('[devbox] install done')) {
+            this.runStage.set('starting');
+            this.runMessage.set('Starting development server');
+            this.terminalRef?.writeLine('> Dependencies installed. Starting dev server...');
+          }
+
+          const urlMatch = output.match(/https?:\/\/[^\s"'`]+/);
+          if (urlMatch) {
+            const detectedUrl = urlMatch[0];
+            this.wc.previewUrl.set(detectedUrl);
+            if (this.runStage() !== 'running') {
+              this.runStage.set('running');
+              this.runMessage.set('Dev server is running');
+              this.stopProgressTimers();
+              this.terminalRef?.writeLine(`> Preview detected from logs: ${detectedUrl}`);
+            }
+          }
+
+          this.terminalRef?.write(output);
+        },
         (cols, rows) => { /* handled by FitAddon */ },
       );
       this.shellWriter = write;
       this.shellKill = kill;
     } catch (e) {
       this.terminalRef?.writeLine('Shell not available in this environment.');
+    }
+  }
+
+  private startProgressTimers(): void {
+    this.stopProgressTimers();
+    this.runSeconds.set(0);
+
+    this.runSecondsTimer = setInterval(() => {
+      this.runSeconds.update((s) => s + 1);
+    }, 1000);
+
+    this.heartbeatTimer = setInterval(() => {
+      const stage = this.runStage();
+      if (stage === 'running' || stage === 'idle' || stage === 'error') return;
+      this.terminalRef?.writeLine(`> Still working (${stage})... ${this.runSeconds()}s elapsed`);
+    }, 15000);
+  }
+
+  private stopProgressTimers(): void {
+    if (this.runSecondsTimer) {
+      clearInterval(this.runSecondsTimer);
+      this.runSecondsTimer = null;
+    }
+    if (this.heartbeatTimer) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
   }
 
@@ -192,4 +313,52 @@ export class AppComponent implements OnInit, OnDestroy {
   getTabName(path: string): string { return path.split('/').pop() ?? path; }
 
   trackByPath(_: number, f: { path: string }): string { return f.path; }
+
+  startResize(target: ResizeTarget, event: MouseEvent): void {
+    event.preventDefault();
+    this.stopResize();
+    this.isResizing.set(true);
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startExplorer = this.explorerWidth();
+    const startTerminal = this.terminalHeight();
+
+    const onMove = (moveEvent: MouseEvent) => {
+      if (target === 'explorer') {
+        const next = Math.min(520, Math.max(160, startExplorer + (moveEvent.clientX - startX)));
+        this.explorerWidth.set(next);
+        return;
+      }
+
+      if (target === 'editorSplit') {
+        const el = this.workAreaRef?.nativeElement;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const pct = ((moveEvent.clientX - rect.left) / rect.width) * 100;
+        this.editorPaneWidth.set(Math.min(80, Math.max(20, pct)));
+        return;
+      }
+
+      const next = Math.min(520, Math.max(120, startTerminal + (startY - moveEvent.clientY)));
+      this.terminalHeight.set(next);
+    };
+
+    const onUp = () => {
+      this.stopResize();
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp, { once: true });
+    this.removeResizeListeners = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+  }
+
+  private stopResize(): void {
+    this.removeResizeListeners?.();
+    this.removeResizeListeners = null;
+    this.isResizing.set(false);
+  }
 }

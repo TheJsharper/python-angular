@@ -15,7 +15,11 @@
         "development": {
           "args": ["--node-env=development"]
         }
-      }
+      },
+      "cache": true,
+      "inputs": ["production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/apps/api"],
+      "externalDependencies": ["webpack-cli"]
     },
     "prune-lockfile": {
       "dependsOn": ["build"],

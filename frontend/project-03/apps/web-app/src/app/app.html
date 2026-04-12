@@ -1,4 +1,4 @@
-﻿<div class="ide-shell">
+﻿<div class="ide-shell" #ideShell [style.grid-template-columns]="ideGridColumns()" [class.is-resizing]="isResizing()">
   <!-- Activity Bar -->
   <div class="activity-bar">
     <button class="activity-btn" title="Explorer" (click)="togglePanel('split')">⊞</button>
@@ -15,6 +15,8 @@
       (refreshed)="wc.refreshFileTree()"
     ></app-file-tree>
   </aside>
+
+  <div class="resizer resizer--vertical" title="Resize explorer" (mousedown)="startResize('explorer', $event)"></div>
 
   <!-- Main Area -->
   <div class="main-area">
@@ -43,12 +45,25 @@
         <span *ngIf="bootStatus() === 'error'" class="error">✗ Error: {{ bootError() || 'unknown' }}</span>
         <span *ngIf="bootStatus() === 'idle'">○ Idle</span>
       </div>
+      <div class="run-status" [class.run-status--active]="runStage() !== 'idle'" [class.run-status--running]="runStage() === 'running'" [class.run-status--error]="runStage() === 'error'">
+        <span *ngIf="runStage() === 'idle'">Template: idle</span>
+        <span *ngIf="runStage() === 'preparing'">Template: preparing</span>
+        <span *ngIf="runStage() === 'installing'">Template: installing ({{ runSeconds() }}s)</span>
+        <span *ngIf="runStage() === 'starting'">Template: starting ({{ runSeconds() }}s)</span>
+        <span *ngIf="runStage() === 'running'">Template: running</span>
+        <span *ngIf="runStage() === 'error'">Template error: {{ runMessage() }}</span>
+      </div>
     </header>
 
     <!-- Editor / Preview Panes -->
-    <div class="work-area">
+    <div class="work-area" #workArea>
       <!-- Editor Pane -->
-      <div class="pane pane--editor" *ngIf="panel() !== 'preview'">
+      <div
+        class="pane pane--editor"
+        *ngIf="panel() !== 'preview'"
+        [style.flex-basis.%]="panel() === 'split' ? editorPaneWidth() : null"
+        [style.flex-grow]="panel() === 'split' ? 0 : 1"
+      >
         <app-editor
           *ngIf="activeFile(); else noFile"
           [language]="activeFile()!.language"
@@ -62,14 +77,33 @@
         </ng-template>
       </div>
 
+      <div
+        *ngIf="panel() === 'split'"
+        class="resizer resizer--vertical resizer--split"
+        title="Resize editor and preview"
+        (mousedown)="startResize('editorSplit', $event)"
+      ></div>
+
       <!-- Preview Pane -->
-      <div class="pane pane--preview" *ngIf="panel() !== 'editor'">
+      <div
+        class="pane pane--preview"
+        *ngIf="panel() !== 'editor'"
+        [style.flex-basis.%]="panel() === 'split' ? (100 - editorPaneWidth()) : null"
+        [style.flex-grow]="panel() === 'split' ? 0 : 1"
+      >
         <app-preview [url]="previewUrl()"></app-preview>
       </div>
     </div>
 
+    <div
+      *ngIf="bottomPanel() !== 'hidden'"
+      class="resizer resizer--horizontal"
+      title="Resize terminal"
+      (mousedown)="startResize('terminal', $event)"
+    ></div>
+
     <!-- Bottom Panel -->
-    <div class="bottom-panel" [class.bottom-panel--hidden]="bottomPanel() === 'hidden'">
+    <div class="bottom-panel" [class.bottom-panel--hidden]="bottomPanel() === 'hidden'" [style.height.px]="bottomPanel() === 'hidden' ? null : terminalHeight()">
       <div class="bottom-panel__tabs">
         <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'terminal'" (click)="toggleBottomPanel('terminal')">TERMINAL</button>
         <button class="bottom-tab" [class.bottom-tab--active]="bottomPanel() === 'packages'" (click)="toggleBottomPanel('packages')">PACKAGES</button>

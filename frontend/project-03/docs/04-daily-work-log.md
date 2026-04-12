@@ -30,9 +30,22 @@
   - DatabaseService factory for selecting correct implementation
   - Updated ProjectsService to use abstraction
   - Updated AppModule and ProjectsModule to wire database
+- [T-2026-04-12-009] Completed Angular template scaffold and execution flow:
+  - Template payload now includes full Angular CLI-like structure
+  - Added src/app/app.component.spec.ts and assets visibility files
+  - Added favicon and angular.json assets alignment
+  - On template load, auto-runs npm install + npm run start in WebContainer terminal
+  - Ctrl+C support retained for process interruption in terminal
+- [T-2026-04-12-010] Completed runtime UX hardening:
+  - Added run stage indicator (preparing/installing/starting/running/error)
+  - Added periodic heartbeat logs while install/start are running
+  - Improved preview activation via URL parsing and shell output URL detection
+  - Reduced noisy redraw behavior using no-progress flags for install/start
+  - Added terminal auto-scroll and visible scrollbar styling
+  - Added draggable resizing for explorer, editor/preview split, and terminal panel
 
 ### Doing
-- [T-2026-04-12-007] PostgreSQL persistence implementation planning.
+- None.
 
 ### Next
 - [T-2026-04-12-007] Implement PostgreSQL migrations and replace in-memory project store.

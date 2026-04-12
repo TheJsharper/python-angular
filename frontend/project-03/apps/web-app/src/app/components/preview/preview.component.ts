@@ -52,10 +52,13 @@ export class PreviewComponent {
   @Input() url = '';
 
   get sanitizedUrl(): string {
-    // Only allow http/https URLs from localhost or WebContainer origins
     if (!this.url) return '';
-    const allowed = /^https?:\/\/(localhost|127\.0\.0\.1|\S+\.webcontainer\.io)(:\d+)?(\/.*)?$/;
-    return allowed.test(this.url) ? this.url : '';
+    try {
+      const parsed = new URL(this.url.trim());
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.href : '';
+    } catch {
+      return '';
+    }
   }
 
   refreshFrame(): void {

@@ -31,7 +31,7 @@ const TEMPLATES: Template[] = [
             private: true,
             scripts: {
               ng: 'ng',
-              start: 'ng serve',
+              start: 'ng serve --no-progress',
               build: 'ng build',
               watch: 'ng build --watch --configuration development',
               test: 'ng test',
@@ -168,7 +168,7 @@ yarn-error.log*
                       polyfills: ['zone.js'],
                       tsConfig: 'tsconfig.app.json',
                       inlineStyleLanguage: 'scss',
-                      assets: ['src/assets'],
+                      assets: ['src/favicon.ico', 'src/assets'],
                       styles: ['src/styles.scss'],
                       scripts: [],
                     },
@@ -220,7 +220,7 @@ yarn-error.log*
                       polyfills: ['zone.js', 'zone.js/testing'],
                       tsConfig: 'tsconfig.spec.json',
                       inlineStyleLanguage: 'scss',
-                      assets: ['src/assets'],
+                      assets: ['src/favicon.ico', 'src/assets'],
                       styles: ['src/styles.scss'],
                       scripts: [],
                     },
@@ -331,6 +331,10 @@ bootstrapApplication(AppComponent, appConfig)
 `,
       },
       {
+        path: 'src/favicon.ico',
+        content: '',
+      },
+      {
         path: 'src/app/app.component.ts',
         content: `import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -345,6 +349,39 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   title = 'start-project';
 }
+`,
+      },
+      {
+        path: 'src/app/app.component.spec.ts',
+        content: `import { TestBed } from '@angular/core/testing';
+import { AppComponent } from './app.component';
+
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AppComponent],
+    }).compileComponents();
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it(\`should have the 'start-project' title\`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('start-project');
+  });
+
+  it('should render title', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h1')?.textContent).toContain('start-project');
+  });
+});
 `,
       },
       {
@@ -394,6 +431,11 @@ export const routes: Routes = [];
       {
         path: 'src/assets/.gitkeep',
         content: '',
+      },
+      {
+        path: 'src/assets/README.md',
+        content: `Place static files here (images, icons, etc.).
+`,
       },
     ],
   },
@@ -695,7 +737,13 @@ export class AppService {
 @Injectable()
 export class TemplatesService {
   findAll(): Omit<Template, 'files'>[] {
-    return TEMPLATES.map(({ files: _files, ...rest }) => rest);
+    return TEMPLATES.map((template) => ({
+      id: template.id,
+      name: template.name,
+      description: template.description,
+      framework: template.framework,
+      language: template.language,
+    }));
   }
 
   findOne(id: string): Template {

@@ -15,7 +15,7 @@ button { font-family: inherit; }
 /* === IDE Shell Grid === */
 .ide-shell {
   display: grid;
-  grid-template-columns: 48px 220px 1fr;
+  grid-template-columns: 48px 220px 4px 1fr;
   grid-template-rows: 100vh;
   height: 100vh;
   background: #1e1e1e;
@@ -23,6 +23,10 @@ button { font-family: inherit; }
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 13px;
   overflow: hidden;
+}
+
+.is-resizing {
+  user-select: none;
 }
 
 /* === Activity Bar === */
@@ -70,6 +74,30 @@ button { font-family: inherit; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.resizer {
+  background: #2a2a2a;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #007acc;
+  }
+
+  &--vertical {
+    width: 4px;
+    cursor: col-resize;
+  }
+
+  &--horizontal {
+    height: 4px;
+    cursor: row-resize;
+  }
+
+  &--split {
+    flex: 0 0 4px;
+    align-self: stretch;
+  }
 }
 
 /* === Top Bar === */
@@ -153,6 +181,39 @@ button { font-family: inherit; }
   .error { color: #f48771; }
 }
 
+.run-status {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: #8f8f8f;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  flex-shrink: 0;
+
+  &--active {
+    color: #e6c267;
+    border-color: #5a4a22;
+    background: #2f2919;
+  }
+
+  &--running {
+    color: #4ec994;
+    border-color: #1f5a43;
+    background: #162820;
+  }
+
+  &--error {
+    color: #f48771;
+    border-color: #6b2d25;
+    background: #2f1b18;
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 /* === Work Area === */
 .work-area {
   display: flex;
@@ -165,8 +226,8 @@ button { font-family: inherit; }
   flex-direction: column;
   overflow: hidden;
 
-  &--editor { flex: 1.2; border-right: 1px solid #1e1e1e; }
-  &--preview { flex: 1; }
+  &--editor { flex: 1.2; border-right: 1px solid #1e1e1e; min-width: 0; }
+  &--preview { flex: 1; min-width: 0; }
 }
 
 .empty-editor {
