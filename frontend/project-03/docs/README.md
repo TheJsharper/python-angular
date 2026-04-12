@@ -20,6 +20,10 @@ Use these docs to rebuild and iterate the product intentionally.
 5. 05-commit-convention.md
    - Commit message format with task IDs and date references.
 
+6. 06-data-architecture.md
+   - Database and storage strategy for MVP and scale.
+   - PostgreSQL-first recommendation with Git provider support.
+
 ## Update Rule
 At the end of each work session:
 1. Move completed items from Doing/Will Do to Done.

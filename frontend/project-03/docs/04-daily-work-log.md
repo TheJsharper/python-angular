@@ -13,11 +13,16 @@
   - npm run start:all (api + web-app)
   - npm run start:api
   - npm run start:web
+- [T-2026-04-12-001] Completed persistence design note:
+  - PostgreSQL-first data architecture documented
+  - Redis/object storage support plan added
+  - GitHub/GitLab/bare-repo integration strategy defined
 
 ### Doing
-- [T-2026-04-12-001] Plan persistence design (options and trade-offs).
+- [T-2026-04-12-007] PostgreSQL persistence implementation planning.
 
 ### Next
+- [T-2026-04-12-007] Implement PostgreSQL migrations and replace in-memory project store.
 - [T-2026-04-12-002] Build package panel install flow.
 - [T-2026-04-12-003] Add top bar Run and Install actions.
 - [T-2026-04-12-004] Add notification/toast system.
