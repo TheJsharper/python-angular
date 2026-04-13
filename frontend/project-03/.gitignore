@@ -52,5 +52,9 @@ __screenshots__/
 .env.local
 .env.*.local
 
+# Ignore environment variable files containing secrets
+.env
+.env.*
+
 # Keep template as reference
 !.env-template
